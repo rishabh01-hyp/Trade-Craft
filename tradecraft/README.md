@@ -1,16 +1,55 @@
-# React + Vite
+# TradeCraft
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A campus peer-to-peer skill marketplace. Students teach what they know and learn from each other — search skills, browse teachers, check ratings, and book sessions across campuses.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Campus selector** — switch between Chitkara Punjab & Himachal
+- **Skill of the Day** — daily rotating highlight
+- **Search** — find skills and students by keyword
+- **Categories** — browse Academic, Technology, Creative, Co-curricular, Sports & Fitness, and Professional skills
+- **Student profiles** — teaching/learning ratings, session counts, availability, and modes (Google Meet, in-person, etc.)
+- **Bookings** — request and track upcoming, pending, and completed sessions
+- **My Skills** — view what you teach and what you're learning
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19 + Vite
+- React Router v7
+- React Context (campus state)
+- Mock data layer (`src/data/mockData.js`) — swap in a real API later
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+npm run dev
+```
+
+Build for production:
+
+```bash
+npm run build
+npm run preview
+```
+
+## Project Structure
+
+```
+src/
+├── components/   # SearchBar, StudentCard, RatingDisplay, CampusSelector
+├── context/      # CampusContext (campus state)
+├── data/         # mockData.js (skills, students, categories, bookings)
+├── layouts/      # AppLayout
+├── Pages/        # Home, Search, Categories, SkillPage, StudentProfile, BookingRequest, MySkills, Bookings
+└── styles/       # global.css
+```
+
+## Scripts
+
+| Script    | Description          |
+| --------- | -------------------- |
+| `dev`     | Start dev server     |
+| `build`   | Production build     |
+| `preview` | Preview the build    |
+| `lint`    | Run ESLint           |
