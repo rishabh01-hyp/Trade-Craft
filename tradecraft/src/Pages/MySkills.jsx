@@ -10,7 +10,7 @@ export default function MySkills() {
 
       <div className="skills-columns">
         <div className="skills-column">
-          <h3>Skills I Teach</h3>
+          <h3>Skills I Teach <span className="count-badge">{mySkills.teaches.length}</span></h3>
           {mySkills.teaches.map((skill) => (
             <div key={skill} className="skill-item">
               <span>{skill}</span>
@@ -20,7 +20,7 @@ export default function MySkills() {
         </div>
 
         <div className="skills-column">
-          <h3>Skills I Want to Learn</h3>
+          <h3>Skills I Want to Learn <span className="count-badge">{mySkills.learning.length}</span></h3>
           {mySkills.learning.map((skill) => (
             <div key={skill} className="skill-item">
               <span>{skill}</span>

@@ -16,11 +16,23 @@
 
   --accent: #2d6a4f;
   --accent-hover: #245a42;
-  --accent-muted: rgba(45, 106, 79, 0.08);
+  --accent-muted: rgba(45, 106, 79, 0.1);
+  --accent-soft: #eef4f0;
+
+  /* Warm secondary accent — pairs with the green for a richer, livelier palette */
+  --warm: #d97706;
+  --warm-muted: rgba(217, 119, 6, 0.1);
 
   --sidebar-width: 220px;
   --header-height: 48px;
-  --radius: 3px;
+
+  /* 3px felt harsh and utilitarian; 8px reads friendlier without looking cartoonish */
+  --radius: 8px;
+
+  /* Soft, low-opacity shadows add depth so elements feel lifted instead of flat */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.07);
+
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
@@ -42,7 +54,10 @@ body {
   margin: 0;
   font-family: var(--font-sans);
   color: var(--text-primary);
-  background: var(--bg);
+  /* A faint radial tint in one corner warms up the page without being a background image */
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgba(45, 106, 79, 0.07), transparent 60%),
+    var(--bg);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
@@ -59,6 +74,16 @@ a {
 button {
   font-family: inherit;
   cursor: pointer;
+}
+
+/* Visible keyboard focus ring keeps the app usable for keyboard/tab users */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--accent-muted);
 }
 
 h1, h2, h3, h4, p {
@@ -105,19 +130,24 @@ h3 {
   display: block;
 }
 
-.sidebar {
-  width: var(--sidebar-width);
-  min-width: var(--sidebar-width);
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 100;
-  transition: transform 0.2s ease;
+  .sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-out;
+  }
+
+.sidebar.open {
+  transform: translateX(0);
 }
 
 .sidebar-header {
@@ -133,17 +163,20 @@ h3 {
   font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: var(--text-primary);
+  color: var(--accent); /* brand in the accent colour — colour without a graphic dot */
 }
 
 .sidebar-close {
-  display: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
   color: var(--text-muted);
   font-size: 1.25rem;
   padding: var(--space-xs);
   line-height: 1;
+  cursor: pointer;
 }
 
 .sidebar-nav {
@@ -166,12 +199,26 @@ h3 {
 }
 
 .nav-link {
-  display: block;
-  padding: 6px var(--space-sm);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px var(--space-sm);
   font-size: 0.875rem;
   color: var(--text-secondary);
   border-radius: var(--radius);
-  transition: background 0.1s, color 0.1s;
+  position: relative;
+  transition: background 0.1s, color 0.1s, padding-left 0.15s;
+}
+
+.nav-icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  opacity: 0.85;
+}
+
+.nav-link.active .nav-icon {
+  opacity: 1;
 }
 
 .nav-link:hover {
@@ -185,6 +232,18 @@ h3 {
   font-weight: 500;
 }
 
+/* A small accent bar on the active item makes the current page obvious at a glance */
+.nav-link.active::before {
+  content: '';
+  position: absolute;
+  left: -var(--space-sm);
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
 .sidebar-footer {
   padding: var(--space-md);
   border-top: 1px solid var(--border);
@@ -192,7 +251,7 @@ h3 {
 
 .main-area {
   flex: 1;
-  margin-left: var(--sidebar-width);
+  margin-left: 0;
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -213,13 +272,25 @@ h3 {
 }
 
 .menu-toggle {
-  display: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
   background: none;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 4px 8px;
-  font-size: 0.8rem;
+  font-size: 1rem;
+  line-height: 1;
   color: var(--text-secondary);
+}
+
+/* Brand shown in the top bar on mobile, where the pinned sidebar is hidden */
+.topbar-brand {
+  display: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
 }
 
 .page-content {
@@ -257,14 +328,28 @@ h3 {
 
 .campus-dropdown {
   position: absolute;
-  top: calc(100% + 4px);
+  /* The selector sits at the bottom of the sidebar, so the menu opens UPWARD
+     to stay on screen instead of clipping off the viewport */
+  bottom: calc(100% + 4px);
   left: 0;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   min-width: 180px;
   z-index: 200;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-md);
+  animation: pop-in 0.12s ease-out;
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .campus-option {
@@ -291,10 +376,13 @@ h3 {
 
 .user-menu-btn {
   margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: none;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 4px 10px;
+  padding: 6px 12px;
   font-size: 0.8rem;
   color: var(--text-secondary);
 }
@@ -313,7 +401,7 @@ h3 {
 
 .search-input {
   flex: 1;
-  padding: 10px 12px;
+  padding: 10px 12px 10px 38px; /* left padding clears the magnifier icon */
   font-size: 0.9rem;
   font-family: inherit;
   border: 1px solid var(--border);
@@ -321,19 +409,39 @@ h3 {
   background: var(--surface);
   color: var(--text-primary);
   outline: none;
+  width: 100%;
+  transition: border-color 0.1s, box-shadow 0.15s;
 }
 
 .search-input:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.12);
 }
 
 .search-input::placeholder {
   color: var(--text-muted);
 }
 
+.search-wrap {
+  position: relative;
+  flex: 1;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
 .search-input-large {
   font-size: 1rem;
-  padding: 12px 14px;
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 
 /* Buttons */
@@ -347,17 +455,26 @@ h3 {
   font-weight: 500;
   border-radius: var(--radius);
   border: 1px solid transparent;
-  transition: background 0.1s, border-color 0.1s;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s, box-shadow 0.15s;
 }
 
+/* A subtle vertical gradient gives the primary action depth, and the slight
+   lift-on-hover makes it feel alive without going full "glossy" */
 .btn-primary {
-  background: var(--accent);
+  background: linear-gradient(180deg, #3a7f5f, var(--accent));
   color: #fff;
   border-color: var(--accent);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-primary:hover {
-  background: var(--accent-hover);
+  background: linear-gradient(180deg, #3a7f5f, var(--accent-hover));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
 }
 
 .btn-ghost {
@@ -409,6 +526,11 @@ h3 {
   color: var(--text-primary);
 }
 
+/* Warm amber stars — a small colour cue that ratings are positive */
+.rating-star {
+  color: var(--warm);
+}
+
 /* Tags */
 
 .tag-list {
@@ -419,23 +541,36 @@ h3 {
 
 .tag {
   display: inline-block;
-  padding: 2px 8px;
+  padding: 2px 10px;
   font-size: 0.75rem;
-  color: var(--text-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
+  color: var(--accent);
+  border: 1px solid rgba(45, 106, 79, 0.25);
+  border-radius: 999px; /* pill shapes read softer than a box and add colour */
+  background: var(--accent-muted);
 }
 
 /* Cards / list items */
 
+/* Students become soft cards rather than flat hairline rows — grouping related
+   info (name, tags, ratings) into one surface makes each result easier to scan */
 .list-item {
-  padding: var(--space-md) 0;
-  border-bottom: 1px solid var(--border);
+  padding: var(--space-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  margin-bottom: var(--space-sm);
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
 }
 
 .list-item:last-child {
-  border-bottom: none;
+  margin-bottom: 0;
+}
+
+/* A faint lift + deeper shadow on hover signals the whole card is interactive */
+.list-item:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .student-row {
@@ -446,14 +581,45 @@ h3 {
 
 .student-row-header {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+  align-items: center;
   gap: var(--space-md);
 }
 
+/* Circular gradient avatar gives each result a face without needing real photos */
+.student-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #1b4a38);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.student-main {
+  flex: 1;
+  min-width: 0;
+}
+
 .student-name {
+  display: block;
   font-weight: 600;
   font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+
+.student-sessions {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-muted);
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
 .student-meta {
@@ -461,9 +627,22 @@ h3 {
   color: var(--text-muted);
 }
 
+.student-row-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
 .student-modes {
   font-size: 0.75rem;
   color: var(--text-muted);
+}
+
+/* Compact button used inside cards (e.g. "View profile") */
+.btn-sm {
+  padding: 5px 12px;
+  font-size: 0.8rem;
 }
 
 /* Sections */
@@ -477,6 +656,9 @@ h3 {
 }
 
 .section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -485,10 +667,108 @@ h3 {
   margin-bottom: var(--space-sm);
 }
 
+/* A short accent tick before each section header ties headings to the brand */
+.section-title::before {
+  content: '';
+  width: 3px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
 /* Homepage */
 
 .hero {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: var(--space-xl);
+  align-items: center;
   margin-bottom: var(--space-xl);
+  padding: var(--space-xl) var(--space-lg);
+  border: 1px solid rgba(45, 106, 79, 0.2);
+  border-radius: var(--radius);
+  /* A soft green wash makes the hero the focal point without being loud */
+  background: linear-gradient(160deg, var(--surface) 0%, #eaf3ed 65%, #e3efe8 100%);
+}
+
+.hero-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: var(--space-sm);
+}
+
+.hero-stats {
+  display: flex;
+  gap: var(--space-xl);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid rgba(45, 106, 79, 0.2);
+}
+
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.hero-stat-num {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+/* The featured skill card sits in the hero as a dark accent block */
+.hero-card {
+  padding: var(--space-lg);
+  border-radius: var(--radius);
+  background: linear-gradient(150deg, var(--accent) 0%, #1b4a38 100%);
+  color: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.hero-card-meta {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: var(--space-sm);
+}
+
+.hero-card-name {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+}
+
+.hero-card-desc {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: var(--space-md);
+  line-height: 1.55;
+}
+
+.hero-card .btn-light {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: var(--radius);
+  transition: background 0.15s, transform 0.15s;
+}
+
+.hero-card .btn-light:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
 }
 
 .hero-tagline {
@@ -497,32 +777,6 @@ h3 {
   margin-top: var(--space-sm);
   margin-bottom: var(--space-lg);
   font-weight: 400;
-}
-
-.skill-of-day {
-  padding: var(--space-lg);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  border-radius: var(--radius);
-}
-
-.skill-of-day-name {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: var(--space-sm);
-}
-
-.skill-of-day-desc {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin-bottom: var(--space-md);
-  line-height: 1.6;
-}
-
-.skill-of-day-meta {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-bottom: var(--space-md);
 }
 
 .discover-grid {
@@ -536,14 +790,15 @@ h3 {
   color: var(--text-secondary);
   padding: 6px 12px;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: 999px;
   background: var(--surface);
-  transition: border-color 0.1s, color 0.1s;
+  transition: border-color 0.1s, color 0.1s, background 0.1s;
 }
 
 .discover-link:hover {
   border-color: var(--accent);
   color: var(--accent);
+  background: var(--accent-muted);
 }
 
 .activity-list {
@@ -584,30 +839,58 @@ h3 {
 
 /* Categories */
 
-.category-list {
-  display: flex;
-  flex-direction: column;
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: var(--space-md);
 }
 
-.category-item {
+.category-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.category-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* A coloured dot per category adds variety and a scannable visual rhythm */
+.category-card::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.category-card:nth-child(2)::before { background: var(--warm); }
+.category-card:nth-child(3)::before { background: #2563eb; }
+.category-card:nth-child(4)::before { background: #db2777; }
+.category-card:nth-child(5)::before { background: #7c3aed; }
+.category-card:nth-child(6)::before { background: #0d9488; }
+
+.category-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.category-meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-md) 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.9rem;
-  color: var(--text-primary);
-  transition: color 0.1s;
-}
-
-.category-item:hover {
-  color: var(--accent);
-}
-
-.category-count {
   font-size: 0.75rem;
   color: var(--text-muted);
   font-family: var(--font-mono);
+  margin-top: auto;
 }
 
 .category-skills {
@@ -633,17 +916,26 @@ h3 {
   margin-bottom: var(--space-xl);
 }
 
+/* Avatar and identity sit side-by-side so the header reads as one unit */
+.profile-id {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
 .profile-avatar {
   width: 64px;
   height: 64px;
   border-radius: var(--radius);
-  background: var(--border);
+  /* Gradient avatar + white initials gives the profile header a pop of brand colour */
+  background: linear-gradient(135deg, var(--accent), #1b4a38);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: #fff;
   margin-bottom: var(--space-md);
 }
 
@@ -773,6 +1065,17 @@ h3 {
   font-weight: 600;
 }
 
+/* Small count chip next to column titles adds context at a glance */
+.count-badge {
+  background: var(--accent-muted);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  margin-left: 6px;
+}
+
 .skill-item {
   display: flex;
   align-items: center;
@@ -825,8 +1128,11 @@ h3 {
 }
 
 .booking-card {
-  padding: var(--space-md) 0;
-  border-bottom: 1px solid var(--border);
+  padding: var(--space-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  margin-bottom: var(--space-sm);
 }
 
 .booking-skill {
@@ -841,17 +1147,30 @@ h3 {
 }
 
 .booking-status {
-  font-size: 0.7rem;
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-muted);
-  margin-top: var(--space-xs);
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-top: var(--space-sm);
+  background: var(--surface-hover);
+  color: var(--text-secondary);
 }
+
+/* Colour-coded statuses make the state of a booking obvious at a glance */
+.booking-status-confirmed { background: var(--accent-muted); color: var(--accent); }
+.booking-status-pending { background: var(--warm-muted); color: var(--warm); }
+.booking-status-completed { background: var(--surface-hover); color: var(--text-muted); }
 
 .empty-state {
   font-size: 0.875rem;
   color: var(--text-muted);
-  padding: var(--space-lg) 0;
+  padding: var(--space-lg);
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
 }
 
 .page-header {
@@ -876,6 +1195,28 @@ h3 {
 
 /* Responsive */
 
+@media (min-width: 769px) {
+  /* On desktop the sidebar stays pinned open. A hidden drawer forces an extra click
+     before every navigation, which slows down a dashboard-style app like this one. */
+  .sidebar {
+    transform: translateX(0);
+  }
+
+  /* Once pinned, the sidebar can never be closed, so hide its close affordances */
+  .sidebar-close {
+    display: none;
+  }
+
+  .main-area {
+    margin-left: var(--sidebar-width);
+  }
+
+  /* The hamburger has no purpose when the sidebar is always visible */
+  .menu-toggle {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
@@ -894,6 +1235,11 @@ h3 {
   }
 
   .menu-toggle {
+    display: flex;
+  }
+
+  /* Show the brand in the top bar on mobile since the sidebar is hidden */
+  .topbar-brand {
     display: block;
   }
 
@@ -903,6 +1249,12 @@ h3 {
 
   .skills-columns {
     grid-template-columns: 1fr;
+  }
+
+  /* The hero's side-by-side layout is too cramped on phones, so it stacks */
+  .hero {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
   }
 
   .top-bar {

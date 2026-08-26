@@ -25,15 +25,20 @@ export default function StudentProfile() {
   return (
     <div className="page-content">
       <div className="profile-header">
-        <div className="profile-avatar">{initials}</div>
-        <h1>{student.name}</h1>
-        <RatingDisplay
-          teachingRating={student.teachingRating}
-          learningRating={student.learningRating}
-        />
-        <p className="profile-details">
-          {student.department} · {student.year} · {campus.name}
-        </p>
+        {/* Avatar sits beside the identity instead of above it — tighter, more structured */}
+        <div className="profile-id">
+          <div className="profile-avatar">{initials}</div>
+          <div>
+            <h1>{student.name}</h1>
+            <RatingDisplay
+              teachingRating={student.teachingRating}
+              learningRating={student.learningRating}
+            />
+            <p className="profile-details">
+              {student.department} · {student.year} · {campus.name}
+            </p>
+          </div>
+        </div>
         <p className="profile-bio">{student.bio}</p>
       </div>
 

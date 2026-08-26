@@ -9,15 +9,19 @@ export default function Categories() {
         <p>Browse skills by area — academic, creative, sports, and more.</p>
       </div>
 
-      <div className="category-list">
+      {/* A card grid (instead of flat rows) lets each category stand out on its own */}
+      <div className="category-grid">
         {categories.map((category) => (
           <Link
             key={category.id}
             to={`/categories/${category.id}`}
-            className="category-item"
+            className="category-card"
           >
-            <span>{category.name}</span>
-            <span className="category-count">{category.skills.length} skills</span>
+            <span className="category-name">{category.name}</span>
+            <span className="category-meta">
+              {category.skills.length} skills
+              <span aria-hidden="true">→</span>
+            </span>
           </Link>
         ))}
       </div>

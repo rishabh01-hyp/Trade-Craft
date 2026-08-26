@@ -42,7 +42,7 @@ export default function Bookings() {
               <Link to={`/student/${booking.teacherId}`}>{booking.teacher}</Link>
               {' · '}{booking.mode}{' · '}{booking.date}{' · '}{booking.time}
             </p>
-            <p className="booking-status">{booking.status}</p>
+            <p className={`booking-status booking-status-${booking.status}`}>{booking.status}</p>
           </article>
         ))
       )}

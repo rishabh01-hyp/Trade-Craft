@@ -14,14 +14,29 @@ export default function SearchBar({ placeholder = 'Search skills...', large = fa
 
   return (
     <form className="search-form" onSubmit={handleSubmit}>
-      <input
-        type="search"
-        className={`search-input ${large ? 'search-input-large' : ''}`}
-        placeholder={placeholder}
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        aria-label="Search skills"
-      />
+      {/* An inline magnifier icon makes the input read as a search box instantly */}
+      <div className="search-wrap">
+        <svg
+          className="search-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <input
+          type="search"
+          className={`search-input ${large ? 'search-input-large' : ''}`}
+          placeholder={placeholder}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          aria-label="Search skills"
+        />
+      </div>
     </form>
   )
 }

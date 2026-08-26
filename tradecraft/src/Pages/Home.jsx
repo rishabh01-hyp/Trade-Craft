@@ -8,35 +8,52 @@ export default function Home() {
 
   return (
     <div className="page-content">
+      {/* Hero splits into copy + a featured skill card so the landing page
+          has a clear focal point instead of a plain wall of text */}
       <section className="hero">
-        <h1>Learn from each other. Teach what you know.</h1>
-        <p className="hero-tagline">What do you want to learn?</p>
-        <SearchBar placeholder="Search skills..." large />
-      </section>
-
-      <section className="section">
-        <h2 className="section-title">Skill of the Day</h2>
-        <div className="skill-of-day">
-          <p className="skill-of-day-name">{skillOfTheDay.skill}</p>
-          <p className="skill-of-day-desc">{skillOfTheDay.description}</p>
-          <p className="skill-of-day-meta">
-            {skillOfTheDay.teachersCount} students on {campus.name} can teach this
-          </p>
-          <Link to={`/skill/${encodeURIComponent(skillOfTheDay.skill)}`} className="btn-ghost">
-            Explore skill →
-          </Link>
+        <div className="hero-content">
+          <p className="hero-eyebrow">Peer-to-peer skill exchange</p>
+          <h1>
+            Learn from each other.
+            <br />
+            Teach what you know.
+          </h1>
+          <p className="hero-tagline">Find a student on your campus to teach you almost anything.</p>
+          <SearchBar placeholder="Search skills..." large />
+          <div className="hero-stats">
+            <div className="hero-stat">
+              <span className="hero-stat-num">10+</span>
+              <span>Skills</span>
+            </div>
+            <div className="hero-stat">
+              <span className="hero-stat-num">2</span>
+              <span>Campuses</span>
+            </div>
+            <div className="hero-stat">
+              <span className="hero-stat-num">4.7★</span>
+              <span>Avg. rating</span>
+            </div>
+          </div>
         </div>
+
+        <aside className="hero-card">
+          <p className="hero-card-meta">Skill of the day · {campus.name}</p>
+          <p className="hero-card-name">{skillOfTheDay.skill}</p>
+          <p className="hero-card-desc">{skillOfTheDay.description}</p>
+          <Link
+            to={`/skill/${encodeURIComponent(skillOfTheDay.skill)}`}
+            className="btn-light"
+          >
+            Explore →
+          </Link>
+        </aside>
       </section>
 
       <section className="section">
         <h2 className="section-title">Discover Something New</h2>
         <div className="discover-grid">
           {discoverSkills.map((skill) => (
-            <Link
-              key={skill}
-              to={`/skill/${encodeURIComponent(skill)}`}
-              className="discover-link"
-            >
+            <Link key={skill} to={`/skill/${encodeURIComponent(skill)}`} className="discover-link">
               {skill}
             </Link>
           ))}
