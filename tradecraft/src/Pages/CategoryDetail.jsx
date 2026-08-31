@@ -1,9 +1,20 @@
 import { Link, useParams } from 'react-router-dom'
+import Loading from '../components/Loading'
+import { useLoading } from '../hooks/useLoading'
 import { getCategoryById } from '../data/mockData'
 
 export default function CategoryDetail() {
   const { categoryId } = useParams()
   const category = getCategoryById(categoryId)
+  const loading = useLoading()
+
+  if (loading) {
+    return (
+      <div className="page-content">
+        <Loading full label="Loading category..." />
+      </div>
+    )
+  }
 
   if (!category) {
     return (

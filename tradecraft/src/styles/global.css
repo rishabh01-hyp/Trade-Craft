@@ -111,7 +111,6 @@ h3 {
   color: var(--text-primary);
 }
 
-/* Layout */
 
 .app-shell {
   display: flex;
@@ -1171,6 +1170,42 @@ h3 {
   text-align: center;
   border: 1px dashed var(--border);
   border-radius: var(--radius);
+}
+
+/* Loading */
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--text-muted);
+}
+
+.loading-full {
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-xl) 0;
+}
+
+/* A ring spinner reads as "in progress" without needing an icon library */
+.loading-spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-label {
+  font-size: 0.85rem;
 }
 
 .page-header {

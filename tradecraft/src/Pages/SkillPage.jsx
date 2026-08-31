@@ -1,15 +1,26 @@
 import { Link, useParams } from 'react-router-dom'
 import StudentCard from '../components/StudentCard'
+import Loading from '../components/Loading'
 import { useCampus } from '../context/CampusContext'
+import { useLoading } from '../hooks/useLoading'
 import { getStudentsBySkill, getSkillByName } from '../data/mockData'
 
 export default function SkillPage() {
   const { skillName } = useParams()
   const decodedName = decodeURIComponent(skillName)
   const { campusId, campus } = useCampus()
+  const loading = useLoading()
 
   const skill = getSkillByName(decodedName)
   const teachers = getStudentsBySkill(decodedName, campusId)
+
+  if (loading) {
+    return (
+      <div className="page-content wide">
+        <Loading full label="Finding students..." />
+      </div>
+    )
+  }
 
   return (
     <div className="page-content wide">

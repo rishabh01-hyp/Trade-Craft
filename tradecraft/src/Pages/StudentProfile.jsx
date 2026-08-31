@@ -1,12 +1,23 @@
 import { Link, useParams } from 'react-router-dom'
 import RatingDisplay from '../components/RatingDisplay'
+import Loading from '../components/Loading'
 import { getStudentById } from '../data/mockData'
 import { useCampus } from '../context/CampusContext'
+import { useLoading } from '../hooks/useLoading'
 
 export default function StudentProfile() {
   const { studentId } = useParams()
   const student = getStudentById(studentId)
   const { campus } = useCampus()
+  const loading = useLoading()
+
+  if (loading) {
+    return (
+      <div className="page-content">
+        <Loading full label="Loading profile..." />
+      </div>
+    )
+  }
 
   if (!student) {
     return (

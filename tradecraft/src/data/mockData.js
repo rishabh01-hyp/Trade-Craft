@@ -86,7 +86,7 @@ export const students = [
   },
   {
     id: 'aditya',
-    name: 'Aditya potyal',
+    name: 'Aditya patyal',
     campus: 'punjab',
     department: 'Computer Science',
     year: '2nd Year',

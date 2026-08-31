@@ -1,13 +1,16 @@
 import { useSearchParams, Link } from 'react-router-dom'
 import SearchBar from '../components/SearchBar'
 import StudentCard from '../components/StudentCard'
+import Loading from '../components/Loading'
 import { useCampus } from '../context/CampusContext'
+import { useLoading } from '../hooks/useLoading'
 import { searchAll, getStudentsBySkill } from '../data/mockData'
 
 export default function Search() {
   const [params] = useSearchParams()
   const query = params.get('q') || ''
   const { campusId } = useCampus()
+  const loading = useLoading()
 
   const { skills, students } = query ? searchAll(query, campusId) : { skills: [], students: [] }
 
@@ -16,6 +19,14 @@ export default function Search() {
     : []
 
   const exactSkillMatch = skillTeachers.length > 0
+
+  if (loading) {
+    return (
+      <div className="page-content wide">
+        <Loading full label="Searching your campus..." />
+      </div>
+    )
+  }
 
   return (
     <div className="page-content wide">

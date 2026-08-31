@@ -1,6 +1,18 @@
+import Loading from '../components/Loading'
+import { useLoading } from '../hooks/useLoading'
 import { mySkills } from '../data/mockData'
 
 export default function MySkills() {
+  const loading = useLoading()
+
+  if (loading) {
+    return (
+      <div className="page-content">
+        <Loading full label="Loading your skills..." />
+      </div>
+    )
+  }
+
   return (
     <div className="page-content">
       <div className="page-header">

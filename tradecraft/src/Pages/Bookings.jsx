@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import Loading from '../components/Loading'
+import { useLoading } from '../hooks/useLoading'
 import { bookings } from '../data/mockData'
 
 const tabs = [
@@ -11,6 +13,15 @@ const tabs = [
 export default function Bookings() {
   const [activeTab, setActiveTab] = useState('upcoming')
   const items = bookings[activeTab]
+  const loading = useLoading()
+
+  if (loading) {
+    return (
+      <div className="page-content">
+        <Loading full label="Loading your bookings..." />
+      </div>
+    )
+  }
 
   return (
     <div className="page-content">

@@ -1,7 +1,19 @@
 import { Link } from 'react-router-dom'
+import Loading from '../components/Loading'
+import { useLoading } from '../hooks/useLoading'
 import { categories } from '../data/mockData'
 
 export default function Categories() {
+  const loading = useLoading()
+
+  if (loading) {
+    return (
+      <div className="page-content">
+        <Loading full label="Loading categories..." />
+      </div>
+    )
+  }
+
   return (
     <div className="page-content">
       <div className="page-header">

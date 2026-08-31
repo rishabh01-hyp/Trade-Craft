@@ -1,10 +1,21 @@
 import { Link } from 'react-router-dom'
 import SearchBar from '../components/SearchBar'
+import Loading from '../components/Loading'
 import { useCampus } from '../context/CampusContext'
+import { useLoading } from '../hooks/useLoading'
 import { skillOfTheDay, discoverSkills, campusActivity } from '../data/mockData'
 
 export default function Home() {
   const { campus } = useCampus()
+  const loading = useLoading()
+
+  if (loading) {
+    return (
+      <div className="page-content">
+        <Loading full label="Loading your campus..." />
+      </div>
+    )
+  }
 
   return (
     <div className="page-content">

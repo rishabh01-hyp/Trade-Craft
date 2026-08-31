@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import Loading from '../components/Loading'
+import { useLoading } from '../hooks/useLoading'
 import { getStudentById } from '../data/mockData'
 
 export default function BookingRequest() {
@@ -11,6 +13,15 @@ export default function BookingRequest() {
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const loading = useLoading()
+
+  if (loading) {
+    return (
+      <div className="page-content">
+        <Loading full label="Loading session details..." />
+      </div>
+    )
+  }
 
   if (!student) {
     return (
