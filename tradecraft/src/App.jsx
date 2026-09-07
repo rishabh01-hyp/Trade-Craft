@@ -10,6 +10,7 @@ import StudentProfile from './Pages/StudentProfile'
 import BookingRequest from './Pages/BookingRequest'
 import MySkills from './Pages/MySkills'
 import Bookings from './Pages/Bookings'
+import ReviewsPage from './Pages/ReviewsPage'
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path="/book/:studentId" element={<BookingRequest />} />
             <Route path="/my-skills" element={<MySkills />} />
             <Route path="/bookings" element={<Bookings />} />
+            <Route path="/reviews" element={<ReviewsPage />} />
           </Routes>
         </AppLayout>
       </BrowserRouter>

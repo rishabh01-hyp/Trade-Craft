@@ -1,0 +1,654 @@
+/* Reviews & Ratings Page Styles */
+
+/* ==========================================================================
+   1. Page Layout & Header
+   ========================================================================== */
+
+.reviews-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  width: 100%;
+}
+
+.reviews-header {
+  margin-bottom: var(--space-xs);
+}
+
+.reviews-header h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.reviews-header p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   2. Rating Summary & Overview Grid
+   ========================================================================== */
+
+.reviews-summary-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--space-lg);
+  align-items: stretch;
+}
+
+/* Main Score Card */
+.reviews-score-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.reviews-score-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+.score-main {
+  font-size: 3rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: var(--space-xs);
+}
+
+.score-stars {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 1.15rem;
+  color: var(--warm);
+  margin-bottom: var(--space-xs);
+}
+
+.score-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+}
+
+/* Dual sub-ratings in score card */
+.score-sub-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  width: 100%;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border);
+}
+
+.sub-metric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.sub-metric-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.sub-metric-val {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sub-metric-val .star-mini {
+  color: var(--warm);
+  font-size: 0.85rem;
+}
+
+/* Rating Breakdown & Distribution Card */
+.reviews-breakdown-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.breakdown-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.breakdown-title::before {
+  content: '';
+  width: 3px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.star-distribution {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.star-row {
+  display: grid;
+  grid-template-columns: 55px 1fr 35px;
+  align-items: center;
+  gap: var(--space-md);
+  font-size: 0.8rem;
+}
+
+.star-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.star-label .star-icon {
+  color: var(--warm);
+  font-size: 0.85rem;
+}
+
+.star-bar-track {
+  height: 8px;
+  background: var(--surface-hover);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.star-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, var(--warm));
+  border-radius: 999px;
+  transition: width 0.4s ease-out;
+}
+
+.star-count {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   3. Tabs Navigation & Filter Bar
+   ========================================================================= */
+
+.reviews-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+  margin-top: var(--space-sm);
+}
+
+.reviews-tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.reviews-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: var(--space-sm) 0 calc(var(--space-sm) + 2px);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.reviews-tab:hover {
+  color: var(--text-primary);
+}
+
+.reviews-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+
+.reviews-tab-count {
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  background: var(--surface-hover);
+  color: var(--text-secondary);
+  padding: 1px 7px;
+  border-radius: 999px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.reviews-tab.active .reviews-tab-count {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+/* ==========================================================================
+   4. Review Cards & Lists
+   ========================================================================== */
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.review-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.review-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.review-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.reviewer-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.reviewer-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #1b4a38);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.reviewer-avatar.alt {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+}
+
+.reviewer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.reviewer-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.reviewer-role {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.review-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.review-skill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-muted);
+  border: 1px solid rgba(45, 106, 79, 0.2);
+  border-radius: 999px;
+}
+
+.review-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+/* Rating Stars inside review card */
+.review-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--warm);
+  font-size: 0.9rem;
+}
+
+.star-rating .star-empty {
+  color: var(--border-strong);
+}
+
+.review-rating-score {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.review-comment {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   5. Completed Sessions / Review Action Section
+   ========================================================================== */
+
+.completed-sessions-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.completed-sessions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.completed-sessions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-md);
+}
+
+.session-card {
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-md);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.session-card:hover {
+  border-color: var(--border-strong);
+  background: var(--surface);
+}
+
+.session-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.session-teacher {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.session-skill {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.btn-review {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-review:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   6. Write Review Modal / Interactive Rating Controls
+   ========================================================================== */
+
+.review-form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.rating-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.star-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.5rem;
+}
+
+.star-picker-btn {
+  background: none;
+  border: none;
+  padding: 2px;
+  color: var(--border-strong);
+  cursor: pointer;
+  transition: color 0.15s, transform 0.1s;
+}
+
+.star-picker-btn.filled,
+.star-picker-btn:hover,
+.star-picker-btn:hover ~ .star-picker-btn {
+  color: var(--warm);
+}
+
+.star-picker-btn:hover {
+  transform: scale(1.15);
+}
+
+.review-textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.review-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.12);
+}
+
+/* ==========================================================================
+   7. Empty States
+   ========================================================================== */
+
+.reviews-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-xl) var(--space-lg);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text-muted);
+  gap: var(--space-sm);
+}
+
+.reviews-empty-state p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   8. Responsive Media Queries
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .reviews-summary-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .reviews-score-card {
+    padding: var(--space-md);
+  }
+
+  .score-main {
+    font-size: 2.5rem;
+  }
+
+  .reviews-breakdown-card {
+    padding: var(--space-md);
+  }
+
+  .star-row {
+    grid-template-columns: 50px 1fr 30px;
+    gap: var(--space-sm);
+  }
+
+  .reviews-nav-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+
+  .reviews-tabs {
+    width: 100%;
+    overflow-x: auto;
+    gap: var(--space-md);
+  }
+
+  .review-card {
+    padding: var(--space-md);
+  }
+
+  .review-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+
+  .review-meta {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .completed-sessions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .score-sub-metrics {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .reviewer-profile {
+    width: 100%;
+  }
+
+  .reviewer-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 0.8rem;
+  }
+}
