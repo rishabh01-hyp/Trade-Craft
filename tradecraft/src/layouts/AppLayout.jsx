@@ -51,6 +51,11 @@ const icons = {
       <path d="M8 2v4M16 2v4M3 9h18" />
     </Icon>
   ),
+  star: (
+    <Icon>
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </Icon>
+  ),
 }
 
 const navGroups = [
@@ -67,6 +72,7 @@ const navGroups = [
     links: [
       { to: '/my-skills', label: 'My Skills', icon: icons.sparkles },
       { to: '/bookings', label: 'Bookings', icon: icons.calendar },
+      { to: '/reviews', label: 'Reviews', icon: icons.star },
     ],
   },
 ]

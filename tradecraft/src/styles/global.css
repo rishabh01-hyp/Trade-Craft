@@ -1046,6 +1046,7 @@ h3 {
   border-bottom: 1px solid var(--border);
 }
 
+<<<<<<< HEAD
 .remove-skill-btn {
   display: inline-flex;
   align-items: center;
@@ -1058,6 +1059,55 @@ h3 {
   background: none;
   border: 1px solid var(--border);
   border-radius: 50%;
+=======
+/* "x" button to remove a skill from a My Skills column */
+.skill-remove-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 2px 6px;
+  cursor: pointer;
+  border-radius: var(--radius);
+}
+
+.skill-remove-btn:hover {
+  color: var(--warm);
+  background: var(--warm-muted);
+}
+
+/* Input + button row for adding a new skill, sits below the list */
+.add-skill-form {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.add-skill-input {
+  flex: 1;
+  font-size: 0.8rem;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.add-skill-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.add-skill-btn {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  white-space: nowrap;
+>>>>>>> 6180e3438fc5fcc9c0a6af8bb512a6595b1be6eb
 }
 
 .remove-skill-btn:hover {
