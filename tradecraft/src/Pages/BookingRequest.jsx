@@ -1,19 +1,20 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Loading from '../components/Loading'
-import { useLoading } from '../hooks/useLoading'
-import { getStudentById } from '../data/mockData'
+import { useFetchData } from '../hooks/useFetchData'
+import { useLocalStorage } from '../hooks/useLocalStorage'
+import { fetchStudent, initialBookings } from '../data/mockData'
 
 export default function BookingRequest() {
   const { studentId } = useParams()
-  const student = getStudentById(studentId)
+  const { data: student, loading } = useFetchData(() => fetchStudent(studentId), [studentId])
+  const [, setBookings] = useLocalStorage('tradecraft_bookings', initialBookings)
 
   const [skill, setSkill] = useState('')
   const [mode, setMode] = useState('')
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
   const [submitted, setSubmitted] = useState(false)
-  const loading = useLoading()
 
   if (loading) {
     return (
@@ -31,8 +32,24 @@ export default function BookingRequest() {
     )
   }
 
-  function handleSubmit(e) {
-    e.preventDefault()
+  function handleSubmit(event) {
+    event.preventDefault()
+
+    const booking = {
+      id: `b${Date.now()}`,
+      skill,
+      teacher: student.name,
+      teacherId: student.id,
+      mode,
+      date,
+      time,
+      status: 'pending',
+    }
+
+    setBookings((current) => ({
+      ...current,
+      pending: [booking, ...current.pending],
+    }))
     setSubmitted(true)
   }
 
@@ -40,13 +57,18 @@ export default function BookingRequest() {
     return (
       <div className="page-content">
         <h1>Session requested</h1>
-        <p className="profile-bio" style={{ marginTop: '16px' }}>
-          Your request to learn {skill} with {student.name} has been sent.
-          Kindly wait for the acceptance.
+        <p className="profile-bio">
+          Your request to learn {skill} with {student.name} has been sent. Please wait for a
+          confirmation.
         </p>
-        <Link to={`/student/${student.id}`} className="btn-ghost" style={{ marginTop: '16px', display: 'inline-block' }}>
-          ← Back to profile
-        </Link>
+        <div className="confirmation-actions">
+          <Link to="/bookings" className="btn btn-primary">
+            View my bookings
+          </Link>
+          <Link to={`/student/${student.id}`} className="btn-ghost">
+            &larr; Back to profile
+          </Link>
+        </div>
       </div>
     )
   }
@@ -64,17 +86,21 @@ export default function BookingRequest() {
 
       <form className="booking-form" onSubmit={handleSubmit}>
         <div className="form-group">
-          <label className="form-label" htmlFor="skill">Skill</label>
+          <label className="form-label" htmlFor="skill">
+            Skill
+          </label>
           <select
             id="skill"
             className="form-select"
             value={skill}
-            onChange={(e) => setSkill(e.target.value)}
+            onChange={(event) => setSkill(event.target.value)}
             required
           >
             <option value="">Select a skill</option>
-            {student.teaches.map((s) => (
-              <option key={s} value={s}>{s}</option>
+            {student.teaches.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
             ))}
           </select>
         </div>
@@ -82,39 +108,43 @@ export default function BookingRequest() {
         <div className="form-group">
           <span className="form-label">Mode</span>
           <div className="mode-options">
-            {student.teachingModes.map((m) => (
+            {student.teachingModes.map((option) => (
               <button
-                key={m}
+                key={option}
                 type="button"
-                className={`mode-option ${mode === m ? 'selected' : ''}`}
-                onClick={() => setMode(m)}
+                className={`mode-option ${mode === option ? 'selected' : ''}`}
+                onClick={() => setMode(option)}
               >
-                {m}
+                {option}
               </button>
             ))}
           </div>
         </div>
 
         <div className="form-group">
-          <label className="form-label" htmlFor="date">Date</label>
+          <label className="form-label" htmlFor="date">
+            Date
+          </label>
           <input
             id="date"
             type="date"
             className="form-input"
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={(event) => setDate(event.target.value)}
             required
           />
         </div>
 
         <div className="form-group">
-          <label className="form-label" htmlFor="time">Time</label>
+          <label className="form-label" htmlFor="time">
+            Time
+          </label>
           <input
             id="time"
             type="time"
             className="form-input"
             value={time}
-            onChange={(e) => setTime(e.target.value)}
+            onChange={(event) => setTime(event.target.value)}
             required
           />
         </div>

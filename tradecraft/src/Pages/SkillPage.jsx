@@ -1,18 +1,17 @@
 import { Link, useParams } from 'react-router-dom'
 import StudentCard from '../components/StudentCard'
 import Loading from '../components/Loading'
-import { useCampus } from '../context/CampusContext'
-import { useLoading } from '../hooks/useLoading'
-import { getStudentsBySkill, getSkillByName } from '../data/mockData'
+import { useFetchData } from '../hooks/useFetchData'
+import { fetchSkillPage } from '../data/mockData'
 
-export default function SkillPage() {
+export default function SkillPage({ campus }) {
   const { skillName } = useParams()
   const decodedName = decodeURIComponent(skillName)
-  const { campusId, campus } = useCampus()
-  const loading = useLoading()
 
-  const skill = getSkillByName(decodedName)
-  const teachers = getStudentsBySkill(decodedName, campusId)
+  const { data, loading } = useFetchData(
+    () => fetchSkillPage(decodedName, campus.id),
+    [decodedName, campus.id]
+  )
 
   if (loading) {
     return (
@@ -22,6 +21,8 @@ export default function SkillPage() {
     )
   }
 
+  const { skill, teachers } = data
+
   return (
     <div className="page-content wide">
       <p className="breadcrumb">
@@ -30,8 +31,9 @@ export default function SkillPage() {
 
       <div className="page-header">
         <h1>{decodedName}</h1>
-        {skill && <p>{skill.description}</p>}
-        {!skill && (
+        {skill ? (
+          <p>{skill.description}</p>
+        ) : (
           <p>Students on {campus.name} who can help you learn {decodedName}.</p>
         )}
       </div>

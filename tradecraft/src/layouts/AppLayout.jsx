@@ -1,9 +1,7 @@
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 import CampusSelector from '../components/CampusSelector'
 
-/* Tiny inline stroke icons make the nav scannable without pulling in an icon library.
-   Each one inherits currentColor so active/inactive states just work. */
 function Icon({ children }) {
   return (
     <svg
@@ -73,7 +71,7 @@ const navGroups = [
   },
 ]
 
-export default function Sidebar({ open, onClose }) {
+function Sidebar({ open, onClose, campus, onCampusChange }) {
   return (
     <>
       <div
@@ -83,7 +81,7 @@ export default function Sidebar({ open, onClose }) {
       />
       <aside className={`sidebar ${open ? 'open' : ''}`}>
         <div className="sidebar-header">
-          <span className="sidebar-logo">Trade-Craft</span>
+          <span className="sidebar-logo">TradeCraft</span>
           <button type="button" className="sidebar-close" onClick={onClose} aria-label="Close menu">
             x
           </button>
@@ -110,36 +108,50 @@ export default function Sidebar({ open, onClose }) {
         </nav>
 
         <div className="sidebar-footer">
-          <CampusSelector />
+          <CampusSelector campus={campus} onCampusChange={onCampusChange} />
         </div>
       </aside>
     </>
   )
 }
 
-export function TopBar({ onMenuToggle }) {
+function TopBar({ onMenuToggle, user, onLogout }) {
   return (
     <header className="top-bar">
-      {/* An icon reads cleaner than the word "Menu" and stays compact on small screens */}
       <button type="button" className="menu-toggle" onClick={onMenuToggle} aria-label="Open menu">
-        ☰
+        &#9776;
       </button>
       <span className="topbar-brand">TradeCraft</span>
-      <button type="button" className="user-menu-btn">
-        You ▾
-      </button>
+
+      {user ? (
+        <div className="user-area">
+          <span className="user-name">Hi, {user.name}</span>
+          <button type="button" className="user-menu-btn" onClick={onLogout}>
+            Log out
+          </button>
+        </div>
+      ) : (
+        <Link to="/login" className="user-menu-btn">
+          Log in
+        </Link>
+      )}
     </header>
   )
 }
 
-export function AppLayout({ children }) {
+export function AppLayout({ children, campus, onCampusChange, user, onLogout }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
     <div className="app-shell">
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        campus={campus}
+        onCampusChange={onCampusChange}
+      />
       <div className="main-area">
-        <TopBar onMenuToggle={() => setSidebarOpen(true)} />
+        <TopBar onMenuToggle={() => setSidebarOpen(true)} user={user} onLogout={onLogout} />
         <main>{children}</main>
       </div>
     </div>

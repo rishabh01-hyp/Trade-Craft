@@ -1,12 +1,11 @@
 import { Link, useParams } from 'react-router-dom'
 import Loading from '../components/Loading'
-import { useLoading } from '../hooks/useLoading'
-import { getCategoryById } from '../data/mockData'
+import { useFetchData } from '../hooks/useFetchData'
+import { fetchCategory } from '../data/mockData'
 
 export default function CategoryDetail() {
   const { categoryId } = useParams()
-  const category = getCategoryById(categoryId)
-  const loading = useLoading()
+  const { data: category, loading } = useFetchData(() => fetchCategory(categoryId), [categoryId])
 
   if (loading) {
     return (
@@ -20,7 +19,9 @@ export default function CategoryDetail() {
     return (
       <div className="page-content">
         <p className="empty-state">Category not found.</p>
-        <Link to="/categories" className="btn-ghost">← Back to categories</Link>
+        <Link to="/categories" className="btn-ghost">
+          &larr; Back to categories
+        </Link>
       </div>
     )
   }
@@ -37,11 +38,7 @@ export default function CategoryDetail() {
 
       <div className="category-skills">
         {category.skills.map((skill) => (
-          <Link
-            key={skill}
-            to={`/skill/${encodeURIComponent(skill)}`}
-            className="skill-link"
-          >
+          <Link key={skill} to={`/skill/${encodeURIComponent(skill)}`} className="skill-link">
             {skill}
           </Link>
         ))}

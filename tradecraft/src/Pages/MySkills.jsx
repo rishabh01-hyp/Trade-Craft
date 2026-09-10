@@ -1,16 +1,33 @@
-import Loading from '../components/Loading'
-import { useLoading } from '../hooks/useLoading'
-import { mySkills } from '../data/mockData'
+import { useState } from 'react'
+import { useLocalStorage } from '../hooks/useLocalStorage'
+import { initialMySkills } from '../data/mockData'
+
+const columns = [
+  { key: 'teaches', title: 'Skills I Teach', placeholder: 'Add a skill you can teach' },
+  { key: 'learning', title: 'Skills I Want to Learn', placeholder: 'Add a skill you want to learn' },
+]
 
 export default function MySkills() {
-  const loading = useLoading()
+  const [skills, setSkills] = useLocalStorage('tradecraft_skills', initialMySkills)
+  const [inputs, setInputs] = useState({ teaches: '', learning: '' })
 
-  if (loading) {
-    return (
-      <div className="page-content">
-        <Loading full label="Loading your skills..." />
-      </div>
-    )
+  function handleInput(column, value) {
+    setInputs((current) => ({ ...current, [column]: value }))
+  }
+
+  function addSkill(column) {
+    const name = inputs[column].trim()
+    if (!name) return
+
+    setSkills((current) => ({ ...current, [column]: [...current[column], name] }))
+    setInputs((current) => ({ ...current, [column]: '' }))
+  }
+
+  function removeSkill(column, name) {
+    setSkills((current) => ({
+      ...current,
+      [column]: current[column].filter((skill) => skill !== name),
+    }))
   }
 
   return (
@@ -21,25 +38,51 @@ export default function MySkills() {
       </div>
 
       <div className="skills-columns">
-        <div className="skills-column">
-          <h3>Skills I Teach <span className="count-badge">{mySkills.teaches.length}</span></h3>
-          {mySkills.teaches.map((skill) => (
-            <div key={skill} className="skill-item">
-              <span>{skill}</span>
-            </div>
-          ))}
-          <button type="button" className="add-skill-btn">+ Add skill</button>
-        </div>
+        {columns.map((column) => (
+          <div key={column.key} className="skills-column">
+            <h3>
+              {column.title}
+              <span className="count-badge">{skills[column.key].length}</span>
+            </h3>
 
-        <div className="skills-column">
-          <h3>Skills I Want to Learn <span className="count-badge">{mySkills.learning.length}</span></h3>
-          {mySkills.learning.map((skill) => (
-            <div key={skill} className="skill-item">
-              <span>{skill}</span>
-            </div>
-          ))}
-          <button type="button" className="add-skill-btn">+ Add skill</button>
-        </div>
+            {skills[column.key].length === 0 && (
+              <p className="empty-state">Nothing added yet.</p>
+            )}
+
+            {skills[column.key].map((skill) => (
+              <div key={skill} className="skill-item">
+                <span>{skill}</span>
+                <button
+                  type="button"
+                  className="remove-skill-btn"
+                  onClick={() => removeSkill(column.key, skill)}
+                  aria-label={`Remove ${skill}`}
+                >
+                  x
+                </button>
+              </div>
+            ))}
+
+            <form
+              className="add-skill-form"
+              onSubmit={(event) => {
+                event.preventDefault()
+                addSkill(column.key)
+              }}
+            >
+              <input
+                type="text"
+                className="form-input"
+                placeholder={column.placeholder}
+                value={inputs[column.key]}
+                onChange={(event) => handleInput(column.key, event.target.value)}
+              />
+              <button type="submit" className="btn btn-outline btn-sm">
+                Add
+              </button>
+            </form>
+          </div>
+        ))}
       </div>
     </div>
   )

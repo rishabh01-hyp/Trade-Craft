@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom'
 import Loading from '../components/Loading'
-import { useLoading } from '../hooks/useLoading'
-import { categories } from '../data/mockData'
+import { useFetchData } from '../hooks/useFetchData'
+import { fetchCategories } from '../data/mockData'
 
 export default function Categories() {
-  const loading = useLoading()
+  const { data: categories, loading } = useFetchData(() => fetchCategories(), [])
 
   if (loading) {
     return (
@@ -18,21 +18,16 @@ export default function Categories() {
     <div className="page-content">
       <div className="page-header">
         <h1>Categories</h1>
-        <p>Browse skills by area — academic, creative, sports, and more.</p>
+        <p>Browse skills by area — academic, creative, sports and more.</p>
       </div>
 
-      {/* A card grid (instead of flat rows) lets each category stand out on its own */}
       <div className="category-grid">
         {categories.map((category) => (
-          <Link
-            key={category.id}
-            to={`/categories/${category.id}`}
-            className="category-card"
-          >
+          <Link key={category.id} to={`/categories/${category.id}`} className="category-card">
             <span className="category-name">{category.name}</span>
             <span className="category-meta">
               {category.skills.length} skills
-              <span aria-hidden="true">→</span>
+              <span aria-hidden="true">&rarr;</span>
             </span>
           </Link>
         ))}

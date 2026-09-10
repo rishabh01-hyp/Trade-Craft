@@ -2,23 +2,17 @@ import { useSearchParams, Link } from 'react-router-dom'
 import SearchBar from '../components/SearchBar'
 import StudentCard from '../components/StudentCard'
 import Loading from '../components/Loading'
-import { useCampus } from '../context/CampusContext'
-import { useLoading } from '../hooks/useLoading'
-import { searchAll, getStudentsBySkill } from '../data/mockData'
+import { useFetchData } from '../hooks/useFetchData'
+import { fetchSearchResults } from '../data/mockData'
 
-export default function Search() {
+export default function Search({ campus }) {
   const [params] = useSearchParams()
   const query = params.get('q') || ''
-  const { campusId } = useCampus()
-  const loading = useLoading()
 
-  const { skills, students } = query ? searchAll(query, campusId) : { skills: [], students: [] }
-
-  const skillTeachers = query
-    ? getStudentsBySkill(query, campusId)
-    : []
-
-  const exactSkillMatch = skillTeachers.length > 0
+  const { data, loading } = useFetchData(
+    () => fetchSearchResults(query, campus.id),
+    [query, campus.id]
+  )
 
   if (loading) {
     return (
@@ -28,23 +22,26 @@ export default function Search() {
     )
   }
 
+  const { skills, students, teachers } = data
+  const exactSkillMatch = teachers.length > 0
+
   return (
     <div className="page-content wide">
       <div className="page-header">
         <h1>Search</h1>
-        <p>Find skills, categories, or students on your campus.</p>
+        <p>Find skills, categories or students on your campus.</p>
       </div>
 
       <SearchBar placeholder="Search skills, categories, students..." initialQuery={query} />
 
       {!query && (
-        <p className="empty-state">Try searching for a skill like React, Guitar, or UI/UX.</p>
+        <p className="empty-state">Try searching for a skill like React, Guitar or UI/UX.</p>
       )}
 
       {query && exactSkillMatch && (
         <section className="section">
           <h2 className="section-title">Students who teach {query}</h2>
-          {skillTeachers.map((student) => (
+          {teachers.map((student) => (
             <StudentCard key={student.id} student={student} />
           ))}
         </section>
@@ -65,7 +62,7 @@ export default function Search() {
         </section>
       )}
 
-      {query && students.length > 0 && !exactSkillMatch && (
+      {query && !exactSkillMatch && students.length > 0 && (
         <section className="section">
           <h2 className="section-title">Students</h2>
           {students.map((student) => (
@@ -75,7 +72,7 @@ export default function Search() {
       )}
 
       {query && !exactSkillMatch && skills.length === 0 && students.length === 0 && (
-        <p className="empty-state">No results for "{query}" on this campus.</p>
+        <p className="empty-state">No results for &ldquo;{query}&rdquo; on this campus.</p>
       )}
     </div>
   )

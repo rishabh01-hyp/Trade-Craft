@@ -1,18 +1,17 @@
 import { useState, useRef, useEffect } from 'react'
-import { useCampus } from '../context/CampusContext'
 import { campuses } from '../data/mockData'
 
-export default function CampusSelector() {
-  const { campusId, setCampusId, campus } = useCampus()
+export default function CampusSelector({ campus, onCampusChange }) {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
   useEffect(() => {
-    function handleClick(e) {
-      if (ref.current && !ref.current.contains(e.target)) {
+    function handleClick(event) {
+      if (ref.current && !ref.current.contains(event.target)) {
         setOpen(false)
       }
     }
+
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
@@ -22,25 +21,26 @@ export default function CampusSelector() {
       <button
         type="button"
         className="campus-selector-btn"
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpen((current) => !current)}
         aria-expanded={open}
       >
         {campus.name}
-        <span aria-hidden="true">▾</span>
+        <span aria-hidden="true">&#9662;</span>
       </button>
+
       {open && (
         <div className="campus-dropdown">
-          {campuses.map((c) => (
+          {campuses.map((option) => (
             <button
-              key={c.id}
+              key={option.id}
               type="button"
-              className={`campus-option ${c.id === campusId ? 'selected' : ''}`}
+              className={`campus-option ${option.id === campus.id ? 'selected' : ''}`}
               onClick={() => {
-                setCampusId(c.id)
+                onCampusChange(option.id)
                 setOpen(false)
               }}
             >
-              {c.name}
+              {option.name}
             </button>
           ))}
         </div>

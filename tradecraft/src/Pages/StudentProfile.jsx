@@ -1,15 +1,12 @@
 import { Link, useParams } from 'react-router-dom'
 import RatingDisplay from '../components/RatingDisplay'
 import Loading from '../components/Loading'
-import { getStudentById } from '../data/mockData'
-import { useCampus } from '../context/CampusContext'
-import { useLoading } from '../hooks/useLoading'
+import { useFetchData } from '../hooks/useFetchData'
+import { fetchStudent, getCampusById } from '../data/mockData'
 
 export default function StudentProfile() {
   const { studentId } = useParams()
-  const student = getStudentById(studentId)
-  const { campus } = useCampus()
-  const loading = useLoading()
+  const { data: student, loading } = useFetchData(() => fetchStudent(studentId), [studentId])
 
   if (loading) {
     return (
@@ -23,20 +20,24 @@ export default function StudentProfile() {
     return (
       <div className="page-content">
         <p className="empty-state">Student not found.</p>
-        <Link to="/search" className="btn-ghost">← Back to search</Link>
+        <Link to="/search" className="btn-ghost">
+          &larr; Back to search
+        </Link>
       </div>
     )
   }
 
   const initials = student.name
     .split(' ')
-    .map((n) => n[0])
+    .map((part) => part[0])
+    .slice(0, 2)
     .join('')
+
+  const campus = getCampusById(student.campus)
 
   return (
     <div className="page-content">
       <div className="profile-header">
-        {/* Avatar sits beside the identity instead of above it — tighter, more structured */}
         <div className="profile-id">
           <div className="profile-avatar">{initials}</div>
           <div>
@@ -46,7 +47,7 @@ export default function StudentProfile() {
               learningRating={student.learningRating}
             />
             <p className="profile-details">
-              {student.department} · {student.year} · {campus.name}
+              {student.department} &middot; {student.year} &middot; {campus.name}
             </p>
           </div>
         </div>
@@ -97,11 +98,7 @@ export default function StudentProfile() {
         </ul>
       </div>
 
-      <Link
-        to={`/book/${student.id}`}
-        className="btn btn-primary"
-        style={{ marginTop: '24px', display: 'inline-flex' }}
-      >
+      <Link to={`/book/${student.id}`} className="btn btn-primary profile-cta">
         Request session
       </Link>
     </div>

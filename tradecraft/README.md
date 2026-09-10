@@ -1,23 +1,26 @@
 # TradeCraft
 
-A campus peer-to-peer skill marketplace. Students teach what they know and learn from each other — search skills, browse teachers, check ratings, and book sessions across campuses.
+A campus peer-to-peer skill marketplace. Students teach what they know and learn from
+each other — search skills, browse teachers, check ratings and book sessions.
 
 ## Features
 
-- **Campus selector** — switch between Chitkara Punjab & Himachal
-- **Skill of the Day** — daily rotating highlight
-- **Search** — find skills and students by keyword
-- **Categories** — browse Academic, Technology, Creative, Co-curricular, Sports & Fitness, and Professional skills
-- **Student profiles** — teaching/learning ratings, session counts, availability, and modes (Google Meet, in-person, etc.)
-- **Bookings** — request and track upcoming, pending, and completed sessions
-- **My Skills** — view what you teach and what you're learning
+- Campus selector for Chitkara Punjab and Himachal
+- Skill of the day on the home page
+- Search across skills, categories and students
+- Browse skills by category
+- Student profiles with teaching/learning ratings and availability
+- Booking requests that are saved in the browser
+- My Skills page to manage what you teach and want to learn
+- Demo login that protects the workspace pages
 
 ## Tech Stack
 
 - React 19 + Vite
 - React Router v7
-- React Context (campus state)
-- Mock data layer (`src/data/mockData.js`) — swap in a real API later
+- Plain CSS (mobile-first, Flexbox and Grid)
+- Browser localStorage for saved data
+- A mock data layer that simulates async API calls with Promises
 
 ## Getting Started
 
@@ -37,13 +40,21 @@ npm run preview
 
 ```
 src/
-├── components/   # SearchBar, StudentCard, RatingDisplay, CampusSelector
-├── context/      # CampusContext (campus state)
-├── data/         # mockData.js (skills, students, categories, bookings)
+├── components/   # SearchBar, StudentCard, RatingDisplay, CampusSelector, Loading
+├── data/         # mockData.js (data + simulated async API)
+├── hooks/        # useFetchData, useLocalStorage
 ├── layouts/      # AppLayout
-├── Pages/        # Home, Search, Categories, SkillPage, StudentProfile, BookingRequest, MySkills, Bookings
-└── styles/       # global.css
+├── Pages/        # Home, Search, Categories, CategoryDetail, SkillPage,
+│                 # StudentProfile, BookingRequest, MySkills, Bookings, Login, NotFound
+├── styles/       # global.css
+└── App.jsx       # campus state, auth state and routes
 ```
+
+## Notes
+
+- Campus and login state are kept in `App.jsx` and passed down through props.
+- `useFetchData` wraps the async data calls and exposes `{ data, loading, error }`.
+- `useLocalStorage` keeps bookings and skills in the browser so they survive a refresh.
 
 ## Scripts
 
