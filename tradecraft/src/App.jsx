@@ -12,9 +12,9 @@ import StudentProfile from './Pages/StudentProfile'
 import BookingRequest from './Pages/BookingRequest'
 import MySkills from './Pages/MySkills'
 import Bookings from './Pages/Bookings'
-<<<<<<< HEAD
 import Login from './Pages/Login'
 import NotFound from './Pages/NotFound'
+import ReviewsPage from './Pages/ReviewsPage'
 
 function ProtectedRoute({ user, children }) {
   if (!user) {
@@ -22,9 +22,6 @@ function ProtectedRoute({ user, children }) {
   }
   return children
 }
-=======
-import ReviewsPage from './Pages/ReviewsPage'
->>>>>>> 6180e3438fc5fcc9c0a6af8bb512a6595b1be6eb
 
 function App() {
   const [campusId, setCampusId] = useState(campuses[0].id)
@@ -33,7 +30,6 @@ function App() {
   const campus = getCampusById(campusId)
 
   return (
-<<<<<<< HEAD
     <BrowserRouter>
       <AppLayout
         campus={campus}
@@ -49,6 +45,7 @@ function App() {
           <Route path="/skill/:skillName" element={<SkillPage campus={campus} />} />
           <Route path="/student/:studentId" element={<StudentProfile />} />
           <Route path="/book/:studentId" element={<BookingRequest />} />
+          <Route path="/reviews" element={<ReviewsPage />} />
           <Route path="/login" element={<Login onLogin={setUser} />} />
           <Route
             path="/my-skills"
@@ -70,26 +67,6 @@ function App() {
         </Routes>
       </AppLayout>
     </BrowserRouter>
-=======
-    <CampusProvider>
-      <BrowserRouter>
-        <AppLayout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/categories" element={<Categories />} />
-            <Route path="/categories/:categoryId" element={<CategoryDetail />} />
-            <Route path="/skill/:skillName" element={<SkillPage />} />
-            <Route path="/student/:studentId" element={<StudentProfile />} />
-            <Route path="/book/:studentId" element={<BookingRequest />} />
-            <Route path="/my-skills" element={<MySkills />} />
-            <Route path="/bookings" element={<Bookings />} />
-            <Route path="/reviews" element={<ReviewsPage />} />
-          </Routes>
-        </AppLayout>
-      </BrowserRouter>
-    </CampusProvider>
->>>>>>> 6180e3438fc5fcc9c0a6af8bb512a6595b1be6eb
   )
 }
 
