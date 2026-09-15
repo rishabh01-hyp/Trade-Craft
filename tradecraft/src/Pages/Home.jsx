@@ -4,7 +4,7 @@ import Loading from '../components/Loading'
 import { useFetchData } from '../hooks/useFetchData'
 import { fetchHomeData } from '../data/mockData'
 
-export default function Home({ campus }) {
+export default function Home({ campus, user }) {
   const { data, loading } = useFetchData(() => fetchHomeData(), [])
 
   if (loading) {
@@ -27,6 +27,8 @@ export default function Home({ campus }) {
             <br />
             Teach what you know.
           </h1>
+          {/* Greeting shown only when a student is logged in */}
+          {user && <p className="hero-user">Signed in as roll no {user.rollNo}</p>}
           <p className="hero-tagline">
             Find a student on your campus who can teach you almost anything.
           </p>

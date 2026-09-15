@@ -38,7 +38,7 @@ function App() {
         onLogout={() => setUser(null)}
       >
         <Routes>
-          <Route path="/" element={<Home campus={campus} />} />
+          <Route path="/" element={<Home campus={campus} user={user} />} />
           <Route path="/search" element={<Search campus={campus} />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/categories/:categoryId" element={<CategoryDetail />} />

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink, Link } from 'react-router-dom'
+import { NavLink, Link, useLocation } from 'react-router-dom'
 import CampusSelector from '../components/CampusSelector'
 
 function Icon({ children }) {
@@ -131,7 +131,7 @@ function TopBar({ onMenuToggle, user, onLogout }) {
 
       {user ? (
         <div className="user-area">
-          <span className="user-name">Hi, {user.name}</span>
+          <span className="user-name">Hi, {user.rollNo}</span>
           <button type="button" className="user-menu-btn" onClick={onLogout}>
             Log out
           </button>
@@ -147,6 +147,15 @@ function TopBar({ onMenuToggle, user, onLogout }) {
 
 export function AppLayout({ children, campus, onCampusChange, user, onLogout }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { pathname } = useLocation()
+
+  // The login page is a full-screen centered form.
+  // Hide the sidebar (categories etc.) and the top bar while logging in.
+  const isLoginPage = pathname === '/login'
+
+  if (isLoginPage) {
+    return <>{children}</>
+  }
 
   return (
     <div className="app-shell">
