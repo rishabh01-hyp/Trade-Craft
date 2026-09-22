@@ -1,8 +1,8 @@
 import { Link, useParams } from 'react-router-dom'
 import RatingDisplay from '../components/RatingDisplay'
 import Loading from '../components/Loading'
-import { useFetchData } from '../hooks/useFetchData'
-import { fetchStudent, getCampusById } from '../data/mockData'
+import {useFetchData } from '../hooks/useFetchData'
+import {fetchStudent, getCampusById } from '../data/mockData'
 
 export default function StudentProfile() {
   const { studentId } = useParams()
@@ -33,7 +33,7 @@ export default function StudentProfile() {
     .slice(0, 2)
     .join('')
 
-  const campus = getCampusById(student.campus)
+  const campus=getCampusById(student.campus)
 
   return (
     <div className="page-content">

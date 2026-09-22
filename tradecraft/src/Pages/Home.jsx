@@ -60,6 +60,21 @@ export default function Home({ campus, user }) {
         </aside>
       </section>
 
+      <section className="quick-links">
+        <Link to="/students" className="quick-link">
+          <span className="quick-link-title">Explore students</span>
+          <span className="quick-link-sub">Browse every teacher, filter and sort</span>
+        </Link>
+        <Link to="/community" className="quick-link">
+          <span className="quick-link-title">Community trends</span>
+          <span className="quick-link-sub">Live GitHub API data, fetch + retry</span>
+        </Link>
+        <Link to="/register" className="quick-link">
+          <span className="quick-link-title">Join TradeCraft</span>
+          <span className="quick-link-sub">Register with validated forms</span>
+        </Link>
+      </section>
+
       <section className="section">
         <h2 className="section-title">Discover Something New</h2>
         <div className="discover-grid">

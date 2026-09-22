@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useLocalStorage } from '../hooks/useLocalStorage'
+import { useToast } from '../components/toastContext'
 import { initialMySkills } from '../data/mockData'
 
 const columns = [
@@ -10,6 +11,7 @@ const columns = [
 export default function MySkills() {
   const [skills, setSkills] = useLocalStorage('tradecraft_skills', initialMySkills)
   const [inputs, setInputs] = useState({ teaches: '', learning: '' })
+  const toast = useToast()
 
   function handleInput(column, value) {
     setInputs((current) => ({ ...current, [column]: value }))
@@ -20,10 +22,14 @@ export default function MySkills() {
     if (!name) return
 
     const exists = skills[column].some((skill) => skill.toLowerCase() === name.toLowerCase())
-    if (exists) return
+    if (exists) {
+      toast.error(`"${name}" is already in your list.`)
+      return
+    }
 
     setSkills((current) => ({ ...current, [column]: [...current[column], name] }))
     setInputs((current) => ({ ...current, [column]: '' }))
+    toast.success(`Added "${name}".`)
   }
 
   function removeSkill(column, name) {
@@ -31,6 +37,7 @@ export default function MySkills() {
       ...current,
       [column]: current[column].filter((skill) => skill !== name),
     }))
+    toast.info(`Removed "${name}".`)
   }
 
   return (

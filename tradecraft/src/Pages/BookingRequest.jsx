@@ -3,12 +3,14 @@ import { Link, useParams } from 'react-router-dom'
 import Loading from '../components/Loading'
 import { useFetchData } from '../hooks/useFetchData'
 import { useLocalStorage } from '../hooks/useLocalStorage'
+import { useToast } from '../components/toastContext'
 import { fetchStudent, initialBookings } from '../data/mockData'
 
 export default function BookingRequest() {
   const { studentId } = useParams()
   const { data: student, loading } = useFetchData(() => fetchStudent(studentId), [studentId])
   const [, setBookings] = useLocalStorage('tradecraft_bookings', initialBookings)
+  const toast = useToast()
 
   const [skill, setSkill] = useState('')
   const [mode, setMode] = useState('')
@@ -51,6 +53,7 @@ export default function BookingRequest() {
       pending: [booking, ...current.pending],
     }))
     setSubmitted(true)
+    toast.success(`Session request sent to ${student.name}.`)
   }
 
   if (submitted) {

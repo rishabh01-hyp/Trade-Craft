@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { initialReviewsData } from '../data/mockReviews.js'
+import { useToast } from '../components/toastContext'
 import '../styles/ReviewsPage.css'
 
 export default function ReviewsPage({ defaultData = initialReviewsData }) {
+  const toast = useToast()
   // Load review data from localStorage under key 'tradecraft_reviews', falling back to initialReviewsData
   const [reviewsData, setReviewsData] = useState(() => {
     try {
@@ -93,6 +95,7 @@ export default function ReviewsPage({ defaultData = initialReviewsData }) {
     setRating('5')
     setSelectedSessionId('')
     setFormSuccessMessage(`Review for ${skill} with ${teacherName} submitted successfully!`)
+    toast.success(`Review for ${skill} submitted.`)
 
     // Clear success message after 4 seconds
     setTimeout(() => {

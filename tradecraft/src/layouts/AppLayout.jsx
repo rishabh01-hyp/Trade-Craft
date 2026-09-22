@@ -40,6 +40,21 @@ const icons = {
       <rect x="14" y="14" width="7" height="7" rx="1" />
     </Icon>
   ),
+  users: (
+    <Icon>
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </Icon>
+  ),
+  globe: (
+    <Icon>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18" />
+      <path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18" />
+    </Icon>
+  ),
   sparkles: (
     <Icon>
       <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />
@@ -64,6 +79,8 @@ const navGroups = [
     links: [
       { to: '/', label: 'Home', end: true, icon: icons.home },
       { to: '/search', label: 'Search', icon: icons.search },
+      { to: '/students', label: 'Students', icon: icons.users },
+      { to: '/community', label: 'Community', icon: icons.globe },
       { to: '/categories', label: 'Categories', icon: icons.grid },
     ],
   },
@@ -149,11 +166,11 @@ export function AppLayout({ children, campus, onCampusChange, user, onLogout }) 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { pathname } = useLocation()
 
-  // The login page is a full-screen centered form.
-  // Hide the sidebar (categories etc.) and the top bar while logging in.
-  const isLoginPage = pathname === '/login'
+  // The login and registration pages are full-screen centered forms.
+  // Hide the sidebar (categories etc.) and the top bar on those routes.
+  const isAuthPage = pathname === '/login' || pathname === '/register'
 
-  if (isLoginPage) {
+  if (isAuthPage) {
     return <>{children}</>
   }
 

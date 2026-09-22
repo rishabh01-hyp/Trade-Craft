@@ -1,12 +1,14 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { authenticate } from '../data/loginCredentials'
+import { useToast } from '../components/toastContext'
 
 export default function Login({ onLogin }) {
   const [rollNo, setRollNo] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const navigate = useNavigate()
+  const toast = useToast()
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -17,12 +19,14 @@ export default function Login({ onLogin }) {
 
     if (!account) {
       setError('Invalid roll number or password. Please try again.')
+      toast.error('Invalid roll number or password.')
       return
     }
 
     // Success: save the logged-in user, clear the error and go home.
     setError('')
     onLogin({ rollNo: account.rollNo, name: account.name })
+    toast.success(`Welcome back, ${account.name}!`)
     navigate('/')
   }
 
@@ -74,6 +78,13 @@ export default function Login({ onLogin }) {
         <button type="submit" className="btn btn-primary login-submit">
           Continue
         </button>
+
+        <p className="login-switch">
+          New to TradeCraft?{' '}
+          <Link to="/register" className="btn-ghost">
+            Create an account
+          </Link>
+        </p>
       </form>
     </div>
   )
