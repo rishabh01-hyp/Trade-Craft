@@ -23,6 +23,7 @@ export default function SelectField({
         onBlur={onBlur}
         required={required}
         aria-invalid={Boolean(error)}
+        aria-describedby={error || hint ? `${id}-message` : undefined}
       >
         <option value="">{placeholder}</option>
         {options.map((option) => {

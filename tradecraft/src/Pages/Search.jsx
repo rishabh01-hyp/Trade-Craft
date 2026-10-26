@@ -1,3 +1,4 @@
+import ErrorState from '../components/ErrorState'
 import { useSearchParams, Link } from 'react-router-dom'
 import SearchBar from '../components/SearchBar'
 import StudentCard from '../components/StudentCard'
@@ -9,10 +10,12 @@ export default function Search({ campus }) {
   const [params] = useSearchParams()
   const query = params.get('q') || ''
 
-  const { data, loading } = useFetchData(
+  const { data, loading, error, retry } = useFetchData(
     () => fetchSearchResults(query, campus.id),
     [query, campus.id]
   )
+
+  if (error) return <div className="page-content"><ErrorState message={error.message} onRetry={retry} /></div>
 
   if (loading) {
     return (
@@ -32,7 +35,7 @@ export default function Search({ campus }) {
         <p>Find skills, categories or students on your campus.</p>
       </div>
 
-      <SearchBar placeholder="Search skills, categories, students..." initialQuery={query} />
+      <SearchBar key={query} placeholder="Search skills, categories, students..." initialQuery={query} />
 
       {!query && (
         <p className="empty-state">Try searching for a skill like React, Guitar or UI/UX.</p>

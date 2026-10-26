@@ -1,3 +1,4 @@
+import ErrorState from '../components/ErrorState'
 import { Link } from 'react-router-dom'
 import SearchBar from '../components/SearchBar'
 import Loading from '../components/Loading'
@@ -5,7 +6,9 @@ import { useFetchData } from '../hooks/useFetchData'
 import { fetchHomeData } from '../data/mockData'
 
 export default function Home({ campus, user }) {
-  const { data, loading } = useFetchData(() => fetchHomeData(), [])
+  const { data, loading, error, retry } = useFetchData(() => fetchHomeData(), [])
+
+  if (error) return <div className="page-content"><ErrorState message={error.message} onRetry={retry} /></div>
 
   if (loading) {
     return (
@@ -67,11 +70,11 @@ export default function Home({ campus, user }) {
         </Link>
         <Link to="/community" className="quick-link">
           <span className="quick-link-title">Community trends</span>
-          <span className="quick-link-sub">Live GitHub API data, fetch + retry</span>
+          <span className="quick-link-sub">Explore open-source learning projects</span>
         </Link>
         <Link to="/register" className="quick-link">
           <span className="quick-link-title">Join TradeCraft</span>
-          <span className="quick-link-sub">Register with validated forms</span>
+          <span className="quick-link-sub">Create your demo learning profile</span>
         </Link>
       </section>
 
@@ -87,7 +90,7 @@ export default function Home({ campus, user }) {
       </section>
 
       <section className="section">
-        <h2 className="section-title">Campus Activity</h2>
+        <h2 className="section-title">Sample Campus Activity</h2>
         <div className="activity-list">
           {campusActivity.popular.map((item) => (
             <div key={item.skill} className="activity-row">

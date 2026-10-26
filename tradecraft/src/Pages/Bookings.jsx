@@ -1,10 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { api } from '../services/api'
-import { useFetchData } from '../hooks/useFetchData'
+import { useWorkspace } from '../components/workspaceContext'
+import { today, validateSession, moveBooking } from '../services/bookings'
 import { useToast } from '../components/toastContext'
-import Loading from '../components/Loading'
-import ErrorState from '../components/ErrorState'
 import Modal from '../components/Modal'
 
 const tabs = [
@@ -14,8 +12,7 @@ const tabs = [
 ]
 
 export default function Bookings() {
-  const { data: initialData, loading, error, retry } = useFetchData(() => api.get('bookings'), [])
-  const [bookings, setBookings] = useState(null)
+  const { bookings, setBookings } = useWorkspace()
   const [activeTab, setActiveTab] = useState('upcoming')
   const [confirmCancel, setConfirmCancel] = useState(null)
   const [rescheduleTarget, setRescheduleTarget] = useState(null)
@@ -23,25 +20,14 @@ export default function Bookings() {
   const [rescheduleTime, setRescheduleTime] = useState('')
   const toast = useToast()
 
-  // Seed the local working copy once the initial GET resolves.
-  // Adjusting state during render (instead of in an effect) is the
-  // React-recommended pattern for syncing state from fetched data.
-  if (initialData && bookings === null) {
-    setBookings(initialData)
-  }
-
   function applyChange(mutator, message) {
-    if (!bookings) return
-    const next = mutator(bookings)
-    localStorage.setItem('tradecraft_bookings', JSON.stringify(next))
-    setBookings(next)
+    setBookings(mutator)
     toast.success(message)
   }
 
   function cancelBooking() {
     if (!confirmCancel) return
     const id = confirmCancel.id
-    // DELETE /bookings/:id
     applyChange((current) => ({
       ...current,
       pending: current.pending.filter((booking) => booking.id !== id),
@@ -60,7 +46,8 @@ export default function Bookings() {
     event.preventDefault()
     if (!rescheduleTarget) return
 
-    // PUT /bookings/:id
+    const error = validateSession(bookings, rescheduleDate, rescheduleTime, rescheduleTarget.id)
+    if (error) return toast.error(error)
     applyChange((current) => ({
       ...current,
       upcoming: current.upcoming.map((booking) =>
@@ -73,16 +60,13 @@ export default function Bookings() {
   }
 
   function completeBooking(booking) {
-    // PUT /bookings/:id — move an upcoming session to completed
-    applyChange((current) => ({
-      ...current,
-      upcoming: current.upcoming.filter((item) => item.id !== booking.id),
-      pending: current.pending.filter((item) => item.id !== booking.id),
-      completed: [
-        { ...booking, status: 'completed' },
-        ...(current.completed || []),
-      ],
-    }), 'Marked as completed.')
+    applyChange((current) => moveBooking(current, booking, 'completed'), 'Marked as completed.')
+  }
+
+  function confirmBooking(booking) {
+    const error = validateSession(bookings, booking.date, booking.time, booking.id)
+    if (error) return toast.error(error)
+    applyChange((current) => moveBooking(current, booking, 'upcoming'), 'Demo session confirmed.')
   }
 
   function rescheduleModal() {
@@ -113,6 +97,7 @@ export default function Bookings() {
             <input
               id="reschedule-date"
               type="date"
+              min={today()}
               className="form-input"
               value={rescheduleDate}
               onChange={(event) => setRescheduleDate(event.target.value)}
@@ -162,30 +147,14 @@ export default function Bookings() {
     )
   }
 
-  if (loading && !bookings) {
-    return (
-      <div className="page-content">
-        <Loading full label="Loading bookings..." />
-      </div>
-    )
-  }
-
-  if (error && !bookings) {
-    return (
-      <div className="page-content">
-        <ErrorState message={error.message || 'Failed to load bookings.'} onRetry={retry} />
-      </div>
-    )
-  }
-
-  const current = bookings || { upcoming: [], pending: [], completed: [] }
+  const current = bookings
   const items = current[activeTab] || []
 
   return (
     <div className="page-content">
       <div className="page-header">
         <h1>Bookings</h1>
-        <p>Create, update and manage your sessions — a full CRUD workflow.</p>
+        <p>Manage your sessions. Confirm (demo) simulates a teacher accepting your request.</p>
       </div>
 
       <div className="booking-tabs">
@@ -194,6 +163,7 @@ export default function Bookings() {
             key={tab.id}
             type="button"
             className={`booking-tab ${activeTab === tab.id ? 'active' : ''}`}
+            aria-pressed={activeTab === tab.id}
             onClick={() => setActiveTab(tab.id)}
           >
             {tab.label}
@@ -245,9 +215,14 @@ export default function Bookings() {
               )}
 
               {activeTab === 'pending' && (
+                <>
+                <button type="button" className="btn-ghost" onClick={() => confirmBooking(booking)}>
+                  Confirm (demo)
+                </button>
                 <button type="button" className="btn-ghost" onClick={() => setConfirmCancel(booking)}>
                   Cancel
                 </button>
+                </>
               )}
             </div>
           </article>

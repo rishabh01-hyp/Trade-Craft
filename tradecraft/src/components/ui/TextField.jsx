@@ -29,6 +29,7 @@ export default function TextField({
         required={required}
         autoComplete={autoComplete}
         aria-invalid={Boolean(error)}
+        aria-describedby={error || hint ? `${id}-message` : undefined}
       />
     </Field>
   )

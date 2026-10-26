@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { useLocalStorage } from '../hooks/useLocalStorage'
+import { useWorkspace } from '../components/workspaceContext'
 import { useToast } from '../components/toastContext'
-import { initialMySkills } from '../data/mockData'
 
 const columns = [
   { key: 'teaches', title: 'Skills I Teach', placeholder: 'Add a skill you can teach' },
@@ -9,7 +8,7 @@ const columns = [
 ]
 
 export default function MySkills() {
-  const [skills, setSkills] = useLocalStorage('tradecraft_skills', initialMySkills)
+  const { skills, setSkills } = useWorkspace()
   const [inputs, setInputs] = useState({ teaches: '', learning: '' })
   const toast = useToast()
 
@@ -84,6 +83,8 @@ export default function MySkills() {
                 type="text"
                 className="form-input"
                 placeholder={column.placeholder}
+                aria-label={column.placeholder}
+                maxLength={60}
                 value={inputs[column.key]}
                 onChange={(event) => handleInput(column.key, event.target.value)}
               />

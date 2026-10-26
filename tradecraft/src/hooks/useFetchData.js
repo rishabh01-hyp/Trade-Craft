@@ -1,14 +1,14 @@
 import { useEffect, useState, useCallback } from 'react'
 
 export function useFetchData(load, deps) {
-  const requestKey = JSON.stringify(deps)
   const [attempt, setAttempt] = useState(0)
+  const requestKey = JSON.stringify([deps, attempt])
   const [result, setResult] = useState({ key: null, data: null, error: null })
 
   useEffect(() => {
     let cancelled = false
 
-    load()
+    Promise.resolve().then(load)
       .then((data) => {
         if (!cancelled) setResult({ key: requestKey, data, error: null })
       })
@@ -25,9 +25,9 @@ export function useFetchData(load, deps) {
   const retry = useCallback(() => setAttempt((current) => current + 1), [])
 
   return {
-    data: result.data,
+    data: result.key === requestKey ? result.data : null,
     loading: result.key !== requestKey,
-    error: result.error,
+    error: result.key === requestKey ? result.error : null,
     retry,
   }
 }

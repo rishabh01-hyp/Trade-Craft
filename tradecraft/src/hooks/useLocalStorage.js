@@ -1,18 +1,16 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { readStored, writeStored } from '../services/storage'
 
 export function useLocalStorage(key, initialValue) {
-  const [value, setValue] = useState(() => {
-    const stored = localStorage.getItem(key)
-    return stored ? JSON.parse(stored) : initialValue
-  })
+  const [value, setValue] = useState(() => readStored(key, initialValue))
+  const [saved, setSaved] = useState(true)
 
-  function updateValue(nextValue) {
-    setValue((current) => {
-      const resolved = typeof nextValue === 'function' ? nextValue(current) : nextValue
-      localStorage.setItem(key, JSON.stringify(resolved))
-      return resolved
-    })
-  }
+  useEffect(() => {
+    // Persist after React commits; state updater functions stay pure.
+    const success = writeStored(key, value)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSaved(success)
+  }, [key, value])
 
-  return [value, updateValue]
+  return [value, setValue, saved]
 }

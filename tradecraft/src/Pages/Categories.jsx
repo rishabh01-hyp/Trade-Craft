@@ -1,10 +1,13 @@
+import ErrorState from '../components/ErrorState'
 import { Link } from 'react-router-dom'
 import Loading from '../components/Loading'
 import { useFetchData } from '../hooks/useFetchData'
 import { fetchCategories } from '../data/mockData'
 
 export default function Categories() {
-  const { data: categories, loading } = useFetchData(() => fetchCategories(), [])
+  const { data: categories, loading, error, retry } = useFetchData(() => fetchCategories(), [])
+
+  if (error) return <div className="page-content"><ErrorState message={error.message} onRetry={retry} /></div>
 
   if (loading) {
     return (

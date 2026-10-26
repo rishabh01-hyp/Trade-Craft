@@ -9,11 +9,11 @@ export default function Field({ label, htmlFor, error, children, hint }) {
       </label>
       {children}
       {error ? (
-        <p className="field-error" role="alert">
+        <p id={`${htmlFor}-message`} className="field-error" role="alert">
           {error}
         </p>
       ) : hint ? (
-        <p className="field-hint">{hint}</p>
+        <p id={`${htmlFor}-message`} className="field-hint">{hint}</p>
       ) : null}
     </div>
   )

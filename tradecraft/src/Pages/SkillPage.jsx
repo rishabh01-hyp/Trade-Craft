@@ -1,3 +1,4 @@
+import ErrorState from '../components/ErrorState'
 import { Link, useParams } from 'react-router-dom'
 import StudentCard from '../components/StudentCard'
 import Loading from '../components/Loading'
@@ -6,12 +7,14 @@ import { fetchSkillPage } from '../data/mockData'
 
 export default function SkillPage({ campus }) {
   const { skillName } = useParams()
-  const decodedName = decodeURIComponent(skillName)
+  const decodedName = skillName
 
-  const { data, loading } = useFetchData(
+  const { data, loading, error, retry } = useFetchData(
     () => fetchSkillPage(decodedName, campus.id),
     [decodedName, campus.id]
   )
+
+  if (error) return <div className="page-content"><ErrorState message={error.message} onRetry={retry} /></div>
 
   if (loading) {
     return (

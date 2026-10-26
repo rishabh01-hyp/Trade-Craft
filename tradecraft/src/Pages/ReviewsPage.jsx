@@ -1,35 +1,26 @@
-import { useState, useEffect } from 'react'
+import { useLocalStorage } from '../hooks/useLocalStorage'
+import { useWorkspace } from '../components/workspaceContext'
+import { useState } from 'react'
 import { initialReviewsData } from '../data/mockReviews.js'
 import { useToast } from '../components/toastContext'
 import '../styles/ReviewsPage.css'
 
 export default function ReviewsPage({ defaultData = initialReviewsData }) {
   const toast = useToast()
-  // Load review data from localStorage under key 'tradecraft_reviews', falling back to initialReviewsData
-  const [reviewsData, setReviewsData] = useState(() => {
-    try {
-      const saved = localStorage.getItem('tradecraft_reviews')
-      return saved ? JSON.parse(saved) : defaultData
-    } catch (error) {
-      console.error('Failed to load reviews from localStorage:', error)
-      return defaultData
-    }
+  const { bookings, owner } = useWorkspace()
+  const [reviewsData, setReviewsData, saved] = useLocalStorage('tradecraft_reviews_' + owner, {
+    ...defaultData, reviewsGiven: [],
   })
+  const reviewsGiven = reviewsData.reviewsGiven || []
+  const completedSessions = bookings.completed
+    .filter((booking) => !reviewsGiven.some((review) => review.sessionId === booking.id))
+    .map((booking) => ({ ...booking, teacherName: booking.teacher }))
 
   // Form controlled state
   const [selectedSessionId, setSelectedSessionId] = useState('')
   const [rating, setRating] = useState('5')
   const [comment, setComment] = useState('')
   const [formSuccessMessage, setFormSuccessMessage] = useState('')
-
-  // Sync review state changes to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('tradecraft_reviews', JSON.stringify(reviewsData))
-    } catch (error) {
-      console.error('Failed to save reviews to localStorage:', error)
-    }
-  }, [reviewsData])
 
   const {
     summary = {
@@ -39,7 +30,6 @@ export default function ReviewsPage({ defaultData = initialReviewsData }) {
       starDistribution: { 5: 20, 4: 6, 3: 1, 2: 1, 1: 0 },
     },
     reviewsReceived = [],
-    completedSessions = [],
   } = reviewsData
 
   // Handle new review submission
@@ -52,12 +42,14 @@ export default function ReviewsPage({ defaultData = initialReviewsData }) {
       (session) => session.id === selectedSessionId
     )
 
-    const teacherName = selectedSession ? selectedSession.teacherName : 'Peer Mentor'
-    const skill = selectedSession ? selectedSession.skill : 'Skill Trade'
+    if (!selectedSession || !comment.trim()) return toast.error('Choose a completed session and write feedback.')
+    const teacherName = selectedSession.teacherName
+    const skill = selectedSession.skill
     const numRating = Number(rating)
 
     const newReview = {
-      id: `rev-${Date.now()}`,
+      id: crypto.randomUUID(),
+      sessionId: selectedSession.id,
       reviewerName: 'You',
       teacherName,
       skill,
@@ -70,25 +62,11 @@ export default function ReviewsPage({ defaultData = initialReviewsData }) {
       }),
     }
 
-    // Update state by appending new review to reviewsReceived and reviewsGiven
-    setReviewsData((prev) => {
-      const updatedReceived = [newReview, ...(prev.reviewsReceived || [])]
-      const updatedGiven = [newReview, ...(prev.reviewsGiven || [])]
-      const currentTotal = (prev.summary?.totalReviews || 0) + 1
-      const currentStars = { ...(prev.summary?.starDistribution || { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }) }
-      currentStars[numRating] = (currentStars[numRating] || 0) + 1
-
-      return {
-        ...prev,
-        summary: {
-          ...prev.summary,
-          totalReviews: currentTotal,
-          starDistribution: currentStars,
-        },
-        reviewsReceived: updatedReceived,
-        reviewsGiven: updatedGiven,
-      }
-    })
+    // Feedback given to a teacher must not increase your own received rating.
+    setReviewsData((current) => ({
+      ...current,
+      reviewsGiven: [newReview, ...current.reviewsGiven],
+    }))
 
     // Reset form fields
     setComment('')
@@ -97,10 +75,7 @@ export default function ReviewsPage({ defaultData = initialReviewsData }) {
     setFormSuccessMessage(`Review for ${skill} with ${teacherName} submitted successfully!`)
     toast.success(`Review for ${skill} submitted.`)
 
-    // Clear success message after 4 seconds
-    setTimeout(() => {
-      setFormSuccessMessage('')
-    }, 4000)
+
   }
 
   // Calculate percentage for star distribution progress bars
@@ -115,13 +90,13 @@ export default function ReviewsPage({ defaultData = initialReviewsData }) {
         {/* Page Header */}
         <header className="page-header reviews-header">
           <h1>Reviews & Ratings</h1>
-          <p>View verified ratings from peer sessions and leave feedback for recent trades.</p>
+          <p>Explore sample received ratings and leave feedback for your completed sessions.</p>
         </header>
 
         {/* Section 1: Overall Rating Summary */}
         <section className="reviews-section" aria-labelledby="summary-title">
           <h2 id="summary-title" className="section-title">
-            Overall Rating Summary
+            Sample Received Rating Summary
           </h2>
 
           <div className="reviews-summary-grid">
@@ -202,7 +177,7 @@ export default function ReviewsPage({ defaultData = initialReviewsData }) {
                       </div>
                       <div className="reviewer-info">
                         <span className="reviewer-name">{review.reviewerName}</span>
-                        <span className="reviewer-role">Verified Student</span>
+                        <span className="reviewer-role">Demo Student</span>
                       </div>
                     </div>
                     <div className="review-meta">
@@ -236,12 +211,24 @@ export default function ReviewsPage({ defaultData = initialReviewsData }) {
           )}
         </section>
 
+        <section className="reviews-section" aria-labelledby="given-title">
+          <h2 id="given-title" className="section-title">Reviews you gave ({reviewsGiven.length})</h2>
+          {!saved && <p role="alert">Feedback could not be saved to this browser.</p>}
+          {reviewsGiven.map((review) => (
+            <article className="review-card" key={review.id}>
+              <h3>{review.skill} with {review.teacherName}</h3>
+              <p>{review.rating}/5 ? {review.comment}</p>
+            </article>
+          ))}
+        </section>
+
         {/* Section 3: Controlled Form to Leave a Review */}
         <section className="reviews-section" aria-labelledby="write-review-title">
           <h2 id="write-review-title" className="section-title">
             Leave a Review
           </h2>
 
+          {completedSessions.length === 0 && <p className="empty-state">Complete a booking to leave feedback. Each session can be reviewed once.</p>}
           <form className="review-form-card" onSubmit={handleSubmitReview}>
             {formSuccessMessage && (
               <div

@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { readStored } from '../services/storage'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { authenticate } from '../data/loginCredentials'
 import { useToast } from '../components/toastContext'
 
@@ -8,6 +9,13 @@ export default function Login({ onLogin }) {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const navigate = useNavigate()
+  const location = useLocation()
+  const profile = readStored('tradecraft_profile', null)
+
+  function finishLogin(account) {
+    onLogin(account)
+    navigate(location.state?.from || '/', { replace: true })
+  }
   const toast = useToast()
 
   function handleSubmit(event) {
@@ -25,9 +33,8 @@ export default function Login({ onLogin }) {
 
     // Success: save the logged-in user, clear the error and go home.
     setError('')
-    onLogin({ rollNo: account.rollNo, name: account.name })
+    finishLogin({ rollNo: account.rollNo, name: account.name })
     toast.success(`Welcome back, ${account.name}!`)
-    navigate('/')
   }
 
   return (
@@ -40,7 +47,7 @@ export default function Login({ onLogin }) {
         </div>
 
         <h1 className="login-title">Log in</h1>
-        <p className="login-subtitle">Sign in with your college roll number to continue.</p>
+        <p className="login-subtitle">Classroom demo: use a sample account or continue your saved browser profile.</p>
 
         <div className="form-group">
           <label className="form-label" htmlFor="rollNo">
@@ -79,9 +86,15 @@ export default function Login({ onLogin }) {
           Continue
         </button>
 
+        <p className="login-subtitle">Sample login: 2510990316 / Rishabh@123</p>
+        {profile && (
+          <button type="button" className="btn btn-outline" onClick={() => finishLogin({ ...profile, name: profile.fullName })}>
+            Continue as {profile.fullName}
+          </button>
+        )}
         <p className="login-switch">
           New to TradeCraft?{' '}
-          <Link to="/register" className="btn-ghost">
+          <Link to="/register" state={location.state} className="btn-ghost">
             Create an account
           </Link>
         </p>

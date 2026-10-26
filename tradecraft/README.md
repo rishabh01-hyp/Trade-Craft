@@ -1,76 +1,65 @@
-# TradeCraft
+﻿# TradeCraft
 
-A campus peer-to-peer skill marketplace. Students teach what they know and learn from
-each other — search skills, browse teachers, check ratings and book sessions.
+A campus skill-exchange SPA aligned with PE-I: HTML, CSS, JavaScript, DOM interaction, React, React Router, Context API, async state and validated reusable forms.
 
-## Features
+## Start here
 
-- Campus selector for Chitkara Punjab and Himachal
-- Skill of the day on the home page
-- Search across skills, categories and students
-- Browse skills by category
-- Student profiles with teaching/learning ratings and availability
-- **Students directory** — debounced search, filter by campus/department, sort, pagination
-- **Community page** — live trending repos from the GitHub Search API with retry + offline fallback
-- **Registration form** with real-time validation and reusable input components
-- Booking requests that are saved in the browser
-- **Full CRUD booking workflow** — create, reschedule, complete, cancel (with modal confirmations)
-- **Toast notifications** across all actions
-- My Skills page to manage what you teach and want to learn
-- Demo login that protects the workspace pages
+- [Flow of control and viva guide](FLOW_OF_CONTROL.md): startup, every route, state ownership, complete file map, crucial decisions and viva questions.
+- [Implementation decisions](DECISIONS.md): review findings, fixes, alternatives and limitations.
+- [Syllabus mapping](PROJECT_TOPICS.md): each supplied topic and where to demonstrate it.
 
-## Tech Stack
+## Run locally
 
-- React 19 + Vite
-- React Router v7
-- Plain CSS (mobile-first, Flexbox and Grid)
-- Browser localStorage for saved data
-- A mock data layer that simulates async API calls with Promises
-- A simulated REST API client (`src/services/api.js`) for CRUD + query params
-- The real GitHub Search API (`fetch`) on the Community page
+From this directory:
 
-## Getting Started
-
-```bash
+```sh
 npm install
 npm run dev
 ```
 
-Build for production:
+If PowerShell blocks npm.ps1, use `npm.cmd` for the same commands.
 
-```bash
+```sh
+npm test
+npm run lint
 npm run build
 npm run preview
 ```
 
-## Project Structure
+## Features
 
-```
-src/
-├── components/   # SearchBar, StudentCard, RatingDisplay, CampusSelector, Loading,
-│                 # Modal, Toasts, ErrorState, Pagination, ui/ (reusable form primitives)
-├── data/         # mockData.js (data + simulated async API)
-├── hooks/        # useFetchData, useLocalStorage, useDebouncedValue
-├── layouts/      # AppLayout
-├── services/     # api.js (simulated REST client)
-├── Pages/        # Home, Search, Students, Community, Categories, CategoryDetail,
-│                 # SkillPage, StudentProfile, BookingRequest, MySkills, Bookings,
-│                 # Login, Register, Reviews, NotFound
-├── styles/       # global.css
-└── App.jsx       # campus state, auth state, ToastProvider and routes
-```
+- Routed discovery pages, categories, student profiles and campus search.
+- Student directory with debounce, filters, sorting and pagination.
+- Reusable profile inputs with inline validation.
+- Browser-only demo profiles and sample login with return-to-requested-page navigation.
+- Shared Context workspace with per-user persisted bookings and skills.
+- Booking request, demo confirmation, rescheduling, completion and cancellation.
+- Future-date and duplicate-slot checks.
+- One review per completed session; given feedback separated from sample received ratings.
+- Keyboard-friendly dialogs, toast notifications and loading/error/retry states.
+- Community repositories loaded with fetch, with bundled fallback data.
 
-## Notes
+## Try the workflow
 
-- Campus and login state are kept in `App.jsx` and passed down through props.
-- `useFetchData` wraps the async data calls and exposes `{ data, loading, error }`.
-- `useLocalStorage` keeps bookings and skills in the browser so they survive a refresh.
+Use sample login **2510990316 / Rishabh@123**, or register a new demo profile with a different ten-digit roll number. Registration does not collect a password; Login can continue the latest saved browser profile.
 
-## Scripts
+Browse a teacher, request a future session, open Bookings and select Pending. Use **Confirm (demo)**, then reschedule or complete the session from Upcoming. Open Reviews to give feedback. Refresh to check persistence.
 
-| Script    | Description          |
-| --------- | -------------------- |
-| `dev`     | Start dev server     |
-| `build`   | Production build     |
-| `preview` | Preview the build    |
-| `lint`    | Run ESLint           |
+## Architecture
+
+`main.jsx → App → BrowserRouter → ToastProvider → WorkspaceProvider → AppLayout → active page`
+
+App owns campus and demo user. Context owns bookings/skills and notifications. Pages own forms and UI flags. Custom hooks handle storage, async data and debounce. Plain CSS provides responsive layouts. No Redux, Zustand, form library or application backend is required.
+
+## Demo boundaries
+
+- Browser storage is local and editable; route guards and sample passwords are teaching examples, not secure authentication.
+- Teacher confirmation/completion is simulated. No booking request is sent to another person.
+- Sample students and received ratings are fixtures. Registered profiles and personal skills do not change the public student directory.
+- Slot checks compare start times, not duration overlap or real teacher calendars.
+- Workspace keys include the roll number. Older unscoped storage is preserved but not automatically assigned to an account. New workspaces start empty.
+- Only the latest registered profile has a continue button. Tabs do not synchronize live.
+- GitHub may be offline or rate-limited; the fallback is bundled sample content.
+- Hosting must serve index.html for SPA routes such as /students.
+
+Automated checks cover data workflows, lint and production build. The browser walkthrough in FLOW_OF_CONTROL.md covers visual and interactive verification.

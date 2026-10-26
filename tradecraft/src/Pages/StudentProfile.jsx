@@ -1,3 +1,4 @@
+import ErrorState from '../components/ErrorState'
 import { Link, useParams } from 'react-router-dom'
 import RatingDisplay from '../components/RatingDisplay'
 import Loading from '../components/Loading'
@@ -6,7 +7,9 @@ import {fetchStudent, getCampusById } from '../data/mockData'
 
 export default function StudentProfile() {
   const { studentId } = useParams()
-  const { data: student, loading } = useFetchData(() => fetchStudent(studentId), [studentId])
+  const { data: student, loading, error, retry } = useFetchData(() => fetchStudent(studentId), [studentId])
+
+  if (error) return <div className="page-content"><ErrorState message={error.message} onRetry={retry} /></div>
 
   if (loading) {
     return (

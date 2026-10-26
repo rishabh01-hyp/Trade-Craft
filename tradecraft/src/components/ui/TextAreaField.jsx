@@ -27,6 +27,7 @@ export default function TextAreaField({
         maxLength={maxLength}
         required={required}
         aria-invalid={Boolean(error)}
+        aria-describedby={error || hint ? `${id}-message` : undefined}
       />
       <span className="field-count">
         {value.length}/{maxLength}

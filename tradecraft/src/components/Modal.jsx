@@ -9,15 +9,37 @@ export default function Modal({ open, onClose, title, children, footer }) {
   useEffect(() => {
     if (!open) return undefined
 
-    panelRef.current?.focus()
+    const previousFocus = document.activeElement
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const panel = panelRef.current
+    panel?.focus()
 
-    function handleKeyDown(event) {
-      if (event.key === 'Escape') onClose()
+    return () => {
+      document.body.style.overflow = previousOverflow
+      previousFocus?.focus()
     }
+  }, [open])
 
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [open, onClose])
+  function handleKeyDown(event) {
+      const panel = panelRef.current
+      if (event.key === 'Escape') onClose()
+      if (event.key !== 'Tab') return
+      const controls = [...panel.querySelectorAll('button, input, select, textarea, a[href], [tabindex="0"]')]
+        .filter((element) => !element.disabled && element.getClientRects().length > 0)
+      const first = controls[0]
+      const last = controls[controls.length - 1]
+      if (!first) {
+        event.preventDefault()
+        panel.focus()
+      } else if (event.shiftKey && (document.activeElement === first || document.activeElement === panel)) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && (document.activeElement === last || document.activeElement === panel)) {
+        event.preventDefault()
+        first.focus()
+      }
+  }
 
   if (!open) return null
 
@@ -30,6 +52,7 @@ export default function Modal({ open, onClose, title, children, footer }) {
         aria-label={title}
         tabIndex={-1}
         ref={panelRef}
+        onKeyDown={handleKeyDown}
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="modal-header">

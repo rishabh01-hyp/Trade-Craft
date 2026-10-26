@@ -94,7 +94,7 @@ export default function Community() {
       <div className="page-header">
         <h1>Community</h1>
         <p>
-          Trending open-source repositories fetched live from the{' '}
+          Popular open-source repositories fetched from the{' '}
           <a
             href="https://docs.github.com/en/rest/search"
             target="_blank"
@@ -107,13 +107,12 @@ export default function Community() {
         </p>
       </div>
 
-      <div className="community-tabs" role="tablist" aria-label="Topics">
+      <div className="community-tabs" role="group" aria-label="Topics">
         {topics.map((item) => (
           <button
             key={item.id}
             type="button"
-            role="tab"
-            aria-selected={item.id === activeTopic}
+            aria-pressed={item.id === activeTopic}
             className={`community-tab ${item.id === activeTopic ? 'active' : ''}`}
             onClick={() => setActiveTopic(item.id)}
           >
@@ -141,7 +140,7 @@ export default function Community() {
             <ErrorState message={error.message || 'Could not reach the GitHub API.'} onRetry={handleRetry} />
           </div>
           <p className="offline-note">
-            Showing cached community data while the live API is unavailable.
+            Showing bundled sample repositories while the live API is unavailable.
           </p>
           <div className="repo-grid">
             {displayed.map((repo) => (

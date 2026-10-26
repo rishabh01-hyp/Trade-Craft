@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { writeStored } from '../services/storage'
+import { loginCredentials } from '../data/loginCredentials'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import TextField from '../components/ui/TextField'
 import SelectField from '../components/ui/SelectField'
 import TextAreaField from '../components/ui/TextAreaField'
@@ -12,8 +14,6 @@ const initialValues = {
   email: '',
   campus: '',
   department: '',
-  password: '',
-  confirmPassword: '',
   bio: '',
   skillsToTeach: '',
 }
@@ -26,7 +26,7 @@ const validators = {
   fullName(value) {
     if (!value.trim()) return 'Full name is required.'
     if (value.trim().length < 3) return 'Name must be at least 3 characters.'
-    if (!/^[a-zA-Z\s.']+$/.test(value.trim())) return 'Name can only contain letters.'
+    if (!/^[\p{L}\s.'-]+$/u.test(value.trim())) return 'Use letters, spaces, apostrophes or hyphens.'
     return ''
   },
   rollNo(value) {
@@ -40,23 +40,11 @@ const validators = {
     return ''
   },
   campus(value) {
-    if (!value) return 'Select your campus.'
+    if (!campuses.some((campus) => campus.id === value)) return 'Select your campus.'
     return ''
   },
   department(value) {
-    if (!value) return 'Select your department.'
-    return ''
-  },
-  password(value) {
-    if (!value) return 'Password is required.'
-    if (value.length < 8) return 'Password must be at least 8 characters.'
-    if (!/[A-Z]/.test(value)) return 'Password needs at least one uppercase letter.'
-    if (!/[0-9]/.test(value)) return 'Password needs at least one number.'
-    return ''
-  },
-  confirmPassword(value, allValues) {
-    if (!value) return 'Please confirm your password.'
-    if (value !== allValues.password) return 'Passwords do not match.'
+    if (!departments.includes(value)) return 'Select your department.'
     return ''
   },
   bio(value) {
@@ -71,6 +59,7 @@ const validators = {
       .map((skill) => skill.trim())
       .filter(Boolean)
     if (skills.length === 0) return 'Add at least one skill you can teach.'
+    if (new Set(skills.map((skill) => skill.toLowerCase())).size !== skills.length) return 'Remove duplicate skills.'
     if (skills.length > 5) return 'You can add up to 5 skills.'
     if (skills.some((skill) => skill.length < 2)) return 'Each skill must be at least 2 characters.'
     return ''
@@ -89,11 +78,12 @@ function validateAll(values) {
   return errors
 }
 
-export default function Register() {
+export default function Register({ onLogin }) {
   const [values, setValues] = useState(initialValues)
   const [errors, setErrors] = useState(initialErrors)
   const [touched, setTouched] = useState({})
   const navigate = useNavigate()
+  const location = useLocation()
   const toast = useToast()
 
   function handleChange(name) {
@@ -132,6 +122,11 @@ export default function Register() {
       return
     }
 
+    if (loginCredentials.some((account) => account.rollNo === values.rollNo.trim())) {
+      toast.error('This roll number already has a demo login. Use the login page.')
+      return
+    }
+
     const profile = {
       fullName: values.fullName.trim(),
       rollNo: values.rollNo.trim(),
@@ -150,9 +145,13 @@ export default function Register() {
       }),
     }
 
-    localStorage.setItem('tradecraft_profile', JSON.stringify(profile))
+    if (!writeStored('tradecraft_profile', profile)) {
+      toast.error('Your profile could not be saved. Enable browser storage and try again.')
+      return
+    }
+    onLogin({ ...profile, name: profile.fullName })
     toast.success(`Welcome to TradeCraft, ${profile.fullName}!`)
-    navigate('/')
+    navigate(location.state?.from || '/my-skills', { replace: true })
   }
 
   return (
@@ -163,9 +162,9 @@ export default function Register() {
           <span className="login-brand-cursor">▊</span>
         </div>
 
-        <h1 className="login-title">Create your account</h1>
+        <h1 className="login-title">Create a demo profile</h1>
         <p className="login-subtitle">
-          Register to teach and learn on your campus. Fields are validated as you fill them.
+          Create a browser-only profile to try teaching and booking. No password is needed; this is a classroom demo.
         </p>
 
         <TextField
@@ -224,27 +223,6 @@ export default function Register() {
           placeholder="Select your department"
         />
 
-        <TextField
-          label="Password"
-          id="password"
-          type="password"
-          value={values.password}
-          onChange={handleChange('password')}
-          onBlur={handleBlur('password')}
-          error={errors.password}
-          hint="Min 8 chars, one uppercase letter and one number"
-        />
-
-        <TextField
-          label="Confirm password"
-          id="confirmPassword"
-          type="password"
-          value={values.confirmPassword}
-          onChange={handleChange('confirmPassword')}
-          onBlur={handleBlur('confirmPassword')}
-          error={errors.confirmPassword}
-        />
-
         <TextAreaField
           label="About you"
           id="bio"
@@ -254,7 +232,7 @@ export default function Register() {
           error={errors.bio}
           rows={3}
           maxLength={200}
-          placeholder="A short intro that appears on your public profile..."
+          placeholder="A short introduction for your saved demo profile..."
         />
 
         <TextField
@@ -269,7 +247,7 @@ export default function Register() {
         />
 
         <button type="submit" className="btn btn-primary login-submit">
-          Create account
+          Create demo profile
         </button>
 
         <p className="login-switch">
